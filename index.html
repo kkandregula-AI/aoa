@@ -83,13 +83,14 @@
   h1 .cool{color:var(--agent);text-shadow:0 0 26px rgba(94,234,212,0.55),0 2px 20px rgba(11,16,38,0.7)}
   h1 .talks-w{color:#C2CAEC;text-decoration:line-through;text-decoration-color:rgba(194,202,236,0.55);text-decoration-thickness:2px}
   .hero p.lead{margin-top:22px}
-  .hero .kicker,.hero h1 span,.hero .lead,.hero .hint{opacity:0}
+  .hero .kicker,.hero h1>span,.hero .lead,.hero .hint{opacity:0}
   .r1{animation:rise .9s .15s forwards}
   .r2{animation:rise .9s .30s forwards}
   .r3{animation:rise .9s .48s forwards}
   .r4{animation:rise 1s .8s forwards}
   @keyframes rise{to{opacity:1;transform:none}}
-  h1 span{display:block;transform:translateY(14px)}
+  h1>span{display:block;transform:translateY(14px)}
+  h1 .talks-w,h1 .cool{display:inline;opacity:1;transform:none}
   .lead{transform:translateY(10px)}
   .hint{margin-top:30px;color:var(--faint);font-size:0.8rem;display:flex;align-items:center;gap:8px;transform:translateY(10px)}
   .hint svg{width:16px;height:16px;stroke:var(--faint)}
@@ -188,6 +189,9 @@
     font-family:var(--display);font-weight:600;font-size:0.86rem;padding:7px 15px;border-radius:999px;cursor:pointer;transition:.3s}
   .modes button[aria-pressed="true"]{background:rgba(94,234,212,0.14);color:var(--agent)}
   .modes button:focus-visible{outline:2px solid var(--agent);outline-offset:2px}
+  .mode-cap{margin:12px 0 0;color:var(--muted);font-size:0.88rem;min-height:1.3em;transition:color .3s}
+  .mode-cap b{font-weight:600}
+  .mode-cap.mcp b{color:var(--tool)} .mode-cap.a2a b{color:var(--peer)} .mode-cap.all b{color:var(--agent)}
 
   @media (max-width:820px){
     .era-stage,.loop-grid,.trust-grid{grid-template-columns:1fr}
@@ -221,6 +225,7 @@
       <button data-mode="mcp" aria-pressed="false">MCP</button>
       <button data-mode="a2a" aria-pressed="false">A2A</button>
     </div>
+    <p class="mode-cap r4" id="modeCap" aria-live="polite"></p>
     <span class="kicker"><span class="dot"></span>Agentic AI</span>
     <h1>
       <span class="r1">The age of AI that <span class="talks-w">talks</span></span>
@@ -442,8 +447,8 @@ const C = {
       ctx.beginPath();
       ctx.moveTo(l.A.px,l.A.py); ctx.lineTo(l.B.px,l.B.py);
       ctx.strokeStyle=linkColor(l);
-      ctx.globalAlpha= act? 0.42 : 0.07;
-      ctx.lineWidth= act? 1.4 : 1;
+      ctx.globalAlpha= act? 0.6 : 0.14;
+      ctx.lineWidth= act? 2 : 1;
       ctx.stroke();
     }
     ctx.globalAlpha=1;
@@ -506,12 +511,21 @@ const C = {
   canvas.addEventListener("touchstart",down,{passive:false}); canvas.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
 
   // mode buttons
+  const capEl=document.getElementById("modeCap");
+  const CAPS={
+    all:'Everything at once — <b>you</b>, agents, tools, and peer agents.',
+    mcp:'<b>MCP</b> — how agents reach your tools &amp; data.',
+    a2a:'<b>A2A</b> — how agents hand work to each other.'
+  };
+  function setCap(){ if(capEl){ capEl.className="mode-cap r4 "+mode; capEl.innerHTML=CAPS[mode]; } }
   document.querySelectorAll(".modes button").forEach(b=>{
     b.addEventListener("click",()=>{
       mode=b.dataset.mode;
       document.querySelectorAll(".modes button").forEach(x=>x.setAttribute("aria-pressed", x===b));
+      setCap();
     });
   });
+  setCap();
 
   // everything is wired up now — re-fit for real layout, then start animating
   window.addEventListener("load",()=>{ resize(); N.forEach(n=>{n.px=n.x*W;n.py=n.y*H;}); });
