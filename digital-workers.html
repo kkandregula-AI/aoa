@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Digital Workers — how agents plug in and team up</title>
+<meta name="description" content="An operable handbook of digital workers. Wire an agent to its tools with MCP, then dispatch a task across a team with A2A." />
+
+<meta name="theme-color" content="#EDF1F5" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="apple-mobile-web-app-title" content="Digital Workers" />
+<link rel="icon" type="image/svg+xml" href="./favicon.svg" />
+<link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
+<link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
+<link rel="manifest" href="./manifest.webmanifest" />
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{
+    --paper:#EDF1F5;
+    --panel:#FFFFFF;
+    --ink:#16202B;
+    --muted:#5C6B7A;
+    --faint:#9AA7B4;
+    --line:#DCE3EA;
+    --mcp:#0E9AA7;      /* worker ↔ tools & data */
+    --mcp-soft:#E1F3F4;
+    --a2a:#D9820F;      /* worker ↔ worker */
+    --a2a-soft:#FBEEDA;
+    --shadow:0 18px 40px -24px rgba(22,32,43,0.35);
+
+    --serif:"Newsreader", Georgia, serif;
+    --sans:"IBM Plex Sans", ui-sans-serif, system-ui, sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, monospace;
+    --maxw:1000px;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth;background:var(--paper);color-scheme:light}
+  body{margin:0;background:var(--paper);color:var(--ink);font-family:var(--sans);line-height:1.6;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+  ::selection{background:var(--mcp-soft)}
+  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 22px}
+
+  h1,h2,h3{font-family:var(--serif);font-weight:500;letter-spacing:-0.01em;margin:0;line-height:1.06}
+  em{font-style:italic}
+  p{margin:0}
+  .muted{color:var(--muted)}
+
+  .kick{font-family:var(--serif);font-style:italic;font-size:1.05rem;color:var(--mcp);margin-bottom:16px}
+  .kick.amber{color:var(--a2a)}
+
+  /* ---------- HERO ---------- */
+  .hero{padding:clamp(48px,9vh,96px) 0 clamp(30px,5vh,60px)}
+  .hero h1{font-size:clamp(2.9rem,8vw,5.4rem);max-width:12ch}
+  .hero .sub{font-size:clamp(1.05rem,1.6vw,1.28rem);color:var(--muted);max-width:56ch;margin-top:22px}
+  .hero-schema{margin:40px 0 8px;width:100%;max-width:760px}
+  .hero-schema svg{width:100%;height:auto;overflow:visible}
+  .legend{display:flex;flex-wrap:wrap;gap:14px 22px;margin-top:20px;font-size:0.9rem;color:var(--muted)}
+  .legend span{display:inline-flex;align-items:center;gap:9px}
+  .legend i{width:12px;height:12px;border-radius:3px}
+  .legend i.round{border-radius:50%}
+
+  /* ---------- generic band ---------- */
+  .band{padding:clamp(56px,9vh,104px) 0;border-top:1px solid var(--line)}
+  .band h2{font-size:clamp(1.9rem,4.4vw,3rem);max-width:18ch}
+  .band .say{color:var(--muted);font-size:clamp(1.02rem,1.5vw,1.16rem);max-width:60ch;margin-top:16px}
+  .num{font-family:var(--mono);font-size:0.78rem;color:var(--faint);letter-spacing:0.04em}
+
+  /* panels */
+  .rig{margin-top:38px;display:grid;grid-template-columns:1.15fr 0.85fr;gap:26px;align-items:stretch}
+  .stage{background:var(--panel);border:1px solid var(--line);border-radius:20px;box-shadow:var(--shadow);
+    padding:18px;position:relative;min-height:300px;display:flex;align-items:center;justify-content:center}
+  .stage svg{width:100%;height:auto;overflow:visible;touch-action:manipulation}
+  .side{display:flex;flex-direction:column;gap:14px}
+
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:16px;padding:18px 18px}
+  .card .lbl{font-size:0.82rem;color:var(--muted)}
+  .card h3{font-size:1.35rem;margin:2px 0 6px}
+  .cap-list{list-style:none;margin:10px 0 0;padding:0;display:flex;flex-direction:column;gap:8px}
+  .cap-list li{display:flex;gap:10px;align-items:flex-start;font-size:0.96rem;color:var(--ink);
+    opacity:0;transform:translateY(4px);transition:.3s}
+  .cap-list li.on{opacity:1;transform:none}
+  .cap-list li .tick{color:var(--mcp);font-weight:600;line-height:1.5}
+  .cap-empty{color:var(--faint);font-size:0.95rem;font-style:italic;font-family:var(--serif)}
+
+  /* protocol log */
+  .log{background:#0F171F;border-radius:14px;padding:14px 15px;font-family:var(--mono);font-size:0.8rem;
+    color:#CBD6E2;line-height:1.7;min-height:120px}
+  .log .dim{color:#6C7C8C}
+  .log .a{color:#5FD3DC}   /* mcp */
+  .log .b{color:#F2B968}   /* a2a */
+  .log .arrow{color:#8DA0B2}
+
+  /* buttons */
+  .btn{appearance:none;font-family:var(--sans);font-weight:600;font-size:0.98rem;border-radius:12px;
+    padding:12px 20px;cursor:pointer;border:1px solid transparent;transition:.2s}
+  .btn.primary{background:var(--a2a);color:#fff}
+  .btn.primary:hover{filter:brightness(1.05)}
+  .btn.primary:disabled{opacity:.45;cursor:default}
+  .btn.ghost{background:transparent;border-color:var(--line);color:var(--muted)}
+  .btn.ghost:hover{color:var(--ink);border-color:var(--faint)}
+  .btn:focus-visible{outline:2px solid var(--ink);outline-offset:3px}
+  .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
+
+  .hint{font-size:0.86rem;color:var(--faint);margin-top:12px}
+
+  /* svg element styles */
+  .node-hit{fill:transparent;cursor:pointer}
+  .tool text,.wk text{font-family:var(--sans)}
+  .conn{stroke-linecap:round;fill:none}
+  .flow{stroke-dasharray:2 8;animation:march 1.1s linear infinite}
+  @keyframes march{to{stroke-dashoffset:-40}}
+
+  /* ---------- COMPARE ---------- */
+  .compare{display:grid;grid-template-columns:1fr 1fr;gap:22px;margin-top:38px}
+  .proto{border-radius:20px;padding:24px;border:1px solid var(--line);background:var(--panel);box-shadow:var(--shadow)}
+  .proto.mcp{border-top:4px solid var(--mcp)}
+  .proto.a2a{border-top:4px solid var(--a2a)}
+  .proto .tag{font-family:var(--mono);font-size:0.76rem;letter-spacing:0.06em}
+  .proto.mcp .tag{color:var(--mcp)} .proto.a2a .tag{color:var(--a2a)}
+  .proto h3{font-size:1.5rem;margin:8px 0 4px}
+  .proto .who{font-family:var(--mono);font-size:0.9rem;color:var(--muted);margin:10px 0 16px}
+  .proto dl{margin:0;display:grid;grid-template-columns:auto 1fr;gap:10px 14px;font-size:0.95rem}
+  .proto dt{color:var(--faint)} .proto dd{margin:0;color:var(--ink)}
+  .proto .analogy{margin-top:18px;padding-top:16px;border-top:1px dashed var(--line);
+    font-family:var(--serif);font-style:italic;color:var(--muted);font-size:1.02rem}
+
+  /* ---------- TOGETHER ---------- */
+  .together .band-inner{background:var(--panel);border:1px solid var(--line);border-radius:20px;
+    box-shadow:var(--shadow);padding:clamp(22px,4vw,40px);margin-top:34px}
+  .steps{list-style:none;margin:22px 0 0;padding:0;counter-reset:s;display:flex;flex-direction:column;gap:2px}
+  .steps li{display:grid;grid-template-columns:auto 1fr;gap:18px;padding:16px 0;border-bottom:1px solid var(--line)}
+  .steps li:last-child{border-bottom:none}
+  .steps .mk{width:30px;height:30px;border-radius:9px;display:grid;place-items:center;
+    font-family:var(--mono);font-size:0.85rem;color:#fff}
+  .steps .mk.m{background:var(--mcp)} .steps .mk.a{background:var(--a2a)} .steps .mk.n{background:var(--ink)}
+  .steps b{font-weight:600}
+  .steps .k{font-family:var(--mono);font-size:0.72rem;letter-spacing:0.05em}
+  .steps .k.m{color:var(--mcp)} .steps .k.a{color:var(--a2a)} .steps .k.n{color:var(--muted)}
+
+  /* ---------- CLOSE ---------- */
+  .close{padding:clamp(64px,12vh,120px) 0 56px;border-top:1px solid var(--line);text-align:center}
+  .close h2{font-size:clamp(1.9rem,4.6vw,3rem);max-width:20ch;margin:0 auto}
+  .sign{margin-top:36px;color:var(--faint);font-size:0.86rem;line-height:1.9}
+  .sign strong{color:var(--muted);font-weight:600}
+
+  #install{position:fixed;right:16px;bottom:16px;z-index:60;display:none;align-items:center;gap:8px;
+    background:var(--ink);color:#fff;border:none;font-family:var(--sans);font-weight:600;font-size:0.9rem;
+    padding:11px 16px;border-radius:12px;cursor:pointer;box-shadow:var(--shadow)}
+  #install svg{width:16px;height:16px;stroke:#fff}
+
+  @media (max-width:800px){
+    .rig{grid-template-columns:1fr}
+    .compare{grid-template-columns:1fr}
+    .stage{min-height:260px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation-duration:.001ms!important;animation-iteration-count:1!important;transition-duration:.001ms!important}
+    html{scroll-behavior:auto}
+  }
+</style>
+</head>
+<body>
+
+<!-- ========== HERO ========== -->
+<section class="hero">
+  <div class="wrap">
+    <p class="kick">A field guide to the new workforce</p>
+    <h1>Digital workers, and the two wires that make them useful.</h1>
+    <p class="sub">An agent on its own is just a mind in a jar. It gets real work done through two connections: one that lets it reach your tools and data, and one that lets it hand work to other agents. Those are <em>MCP</em> and <em>A2A</em> — and below, you can operate both.</p>
+
+    <div class="hero-schema">
+      <svg id="heroSvg" viewBox="0 0 760 260" role="img" aria-label="A worker connected to tools and to another worker"></svg>
+    </div>
+    <div class="legend" aria-hidden="true">
+      <span><i style="background:var(--ink)"></i>Digital worker</span>
+      <span><i class="round" style="background:var(--mcp)"></i>Tools &amp; data — via MCP</span>
+      <span><i class="round" style="background:var(--a2a)"></i>Another worker — via A2A</span>
+    </div>
+  </div>
+</section>
+
+<!-- ========== MCP RIG ========== -->
+<section class="band">
+  <div class="wrap">
+    <p class="num">Wire 01</p>
+    <p class="kick">MCP · Model Context Protocol</p>
+    <h2>Give a worker its tools.</h2>
+    <p class="say">MCP is a standard socket. Any tool that speaks it — a calendar, a database, the web, your files, a code runner — plugs into the worker the same way. Tap a tool to connect it, and watch what the worker can suddenly do.</p>
+
+    <div class="rig">
+      <div class="stage">
+        <svg id="mcpSvg" viewBox="0 0 520 380" role="img" aria-label="Worker with connectable tools"></svg>
+      </div>
+      <div class="side">
+        <div class="card">
+          <div class="lbl">This worker can now:</div>
+          <ul class="cap-list" id="capList"></ul>
+          <p class="cap-empty" id="capEmpty">Nothing yet — plug in a tool.</p>
+        </div>
+        <div class="log" id="mcpLog" aria-live="polite"></div>
+        <button class="btn ghost" id="mcpReset" type="button">Unplug all</button>
+      </div>
+    </div>
+    <p class="hint">One worker, many tools. The worker always asks; the tool answers. That's the whole idea of MCP.</p>
+  </div>
+</section>
+
+<!-- ========== A2A RIG ========== -->
+<section class="band">
+  <div class="wrap">
+    <p class="num">Wire 02</p>
+    <p class="kick amber">A2A · Agent-to-Agent</p>
+    <h2>Let workers hand off to each other.</h2>
+    <p class="say">Some jobs need more than one specialist. A2A is a standard way for one worker to pass part of a task to another — sharing what it found, asking for what it needs. Dispatch a job and follow it down the line.</p>
+
+    <div class="rig">
+      <div class="stage">
+        <svg id="a2aSvg" viewBox="0 0 520 300" role="img" aria-label="A team of workers passing a task along"></svg>
+      </div>
+      <div class="side">
+        <div class="card">
+          <div class="lbl" id="a2aStatusLbl">Idle</div>
+          <h3 id="a2aWho">The team is waiting</h3>
+          <p class="muted" id="a2aRole" style="font-size:.95rem">Press dispatch to send a task through the workers.</p>
+        </div>
+        <div class="log" id="a2aLog" aria-live="polite"></div>
+        <div class="row">
+          <button class="btn primary" id="a2aGo" type="button">Dispatch a task</button>
+          <button class="btn ghost" id="a2aReset" type="button">Reset</button>
+        </div>
+      </div>
+    </div>
+    <p class="hint">No central boss — each worker takes its piece and passes the rest on. Even a worker from another company can join, as long as it speaks A2A.</p>
+  </div>
+</section>
+
+<!-- ========== COMPARE ========== -->
+<section class="band">
+  <div class="wrap">
+    <p class="num">Side by side</p>
+    <h2>Same worker, two very different wires.</h2>
+    <p class="say">It's easy to blur them together. The cleanest way to keep them apart: ask <em>what's on the other end?</em></p>
+
+    <div class="compare">
+      <div class="proto mcp">
+        <div class="tag">MCP</div>
+        <h3>Worker to tools &amp; data</h3>
+        <div class="who">agent ⇄ tool</div>
+        <dl>
+          <dt>Connects</dt><dd>a worker to a tool, file, database, or API</dd>
+          <dt>Who asks</dt><dd>the worker — the tool just responds</dd>
+          <dt>Makes it</dt><dd>capable — able to act on the real world</dd>
+        </dl>
+        <p class="analogy">Like the ports on a laptop. Any device that fits the port just works.</p>
+      </div>
+      <div class="proto a2a">
+        <div class="tag">A2A</div>
+        <h3>Worker to worker</h3>
+        <div class="who">agent ⇄ agent</div>
+        <dl>
+          <dt>Connects</dt><dd>one agent to another, even across vendors</dd>
+          <dt>Who asks</dt><dd>either side — they negotiate and hand off</dd>
+          <dt>Makes it</dt><dd>collaborative — a team instead of a soloist</dd>
+        </dl>
+        <p class="analogy">Like coworkers messaging each other to split a project.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ========== TOGETHER ========== -->
+<section class="band together">
+  <div class="wrap">
+    <p class="num">Both at once</p>
+    <h2>A real task uses both wires without you noticing.</h2>
+    <p class="say">Say you ask a worker: <em>“Put together this week's sales summary and send it to my team.”</em> Here's the quiet choreography.</p>
+
+    <div class="band-inner">
+      <ol class="steps">
+        <li><span class="mk n">1</span><div><span class="k n">GOAL</span><br><b>You hand over the goal.</b> One sentence. No steps, no clicking.</div></li>
+        <li><span class="mk m">2</span><div><span class="k m">MCP</span><br><b>It pulls the numbers.</b> The worker asks your database and calendar for this week's orders and meetings.</div></li>
+        <li><span class="mk a">3</span><div><span class="k a">A2A</span><br><b>It calls in a specialist.</b> A writer agent takes the raw figures and shapes a clean summary.</div></li>
+        <li><span class="mk m">4</span><div><span class="k m">MCP</span><br><b>It delivers.</b> The worker uses your email tool to send the finished note to the team.</div></li>
+        <li><span class="mk n">5</span><div><span class="k n">CHECK</span><br><b>You stay in charge.</b> It pauses for your yes before anything leaves your name.</div></li>
+      </ol>
+    </div>
+  </div>
+</section>
+
+<!-- ========== CLOSE ========== -->
+<section class="close">
+  <div class="wrap">
+    <h2>The smartest worker is worthless unwired. MCP gives it reach; A2A gives it colleagues.</h2>
+    <p class="sign">
+      <strong>Designed &amp; Architected by Krishnamurthy Kandregula · Made by Claude</strong><br>
+      An interactive PWA · MCP connects a worker to tools &amp; data · A2A connects workers to each other
+    </p>
+  </div>
+</section>
+
+<button id="install" aria-label="Install this app">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
+  Install
+</button>
+
+<script>
+/* PWA — real manifest (linked in <head>) + service worker for offline-after-first-load + install */
+(function(){
+  if("serviceWorker" in navigator){
+    window.addEventListener("load",function(){ navigator.serviceWorker.register("./sw.js").catch(function(){}); });
+  }
+  var d=null; var btn=document.getElementById("install");
+  window.addEventListener("beforeinstallprompt",function(e){ e.preventDefault(); d=e; if(btn) btn.style.display="inline-flex"; });
+  if(btn) btn.addEventListener("click",async function(){ if(!d) return; d.prompt(); try{ await d.userChoice; }catch(e){} d=null; btn.style.display="none"; });
+  window.addEventListener("appinstalled",function(){ if(btn) btn.style.display="none"; });
+})();
+
+const REDUCE = window.matchMedia && window.matchMedia("(prefers-reduced-motion:reduce)").matches;
+const NS="http://www.w3.org/2000/svg";
+function el(tag,attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+const C={mcp:"#0E9AA7",a2a:"#D9820F",ink:"#16202B",line:"#DCE3EA",muted:"#5C6B7A",paper:"#EDF1F5"};
+
+/* ============ HERO schematic ============ */
+(function(){
+  const svg=document.getElementById("heroSvg"); if(!svg) return;
+  // worker centre-left, tools upper, peer lower-right
+  const wk={x:250,y:130};
+  const tools=[{x:470,y:52},{x:520,y:130},{x:470,y:208}];
+  const peer={x:660,y:200};
+
+  function link(a,b,color){const p=el("path",{d:`M${a.x} ${a.y} L${b.x} ${b.y}`,stroke:color,"stroke-width":2,fill:"none","stroke-linecap":"round",opacity:.55});return p;}
+  tools.forEach(t=>svg.appendChild(link(wk,t,C.mcp)));
+  svg.appendChild(link(wk,peer,C.a2a));
+
+  // flowing pulses
+  const pulses=[];
+  function pulse(a,b,color){const c=el("circle",{r:3.5,fill:color});svg.appendChild(c);pulses.push({a,b,color,c,t:Math.random()});}
+  tools.forEach(t=>pulse(wk,t,C.mcp));
+  pulse(wk,peer,C.a2a);
+
+  // worker box
+  const box=el("rect",{x:wk.x-46,y:wk.y-34,width:92,height:68,rx:14,fill:C.ink});svg.appendChild(box);
+  svg.appendChild(el("rect",{x:wk.x-16,y:wk.y-14,width:32,height:28,rx:6,fill:C.paper}));
+  const wt=el("text",{x:wk.x,y:wk.y+30,"text-anchor":"middle",fill:"#fff","font-size":11,"font-family":"IBM Plex Sans"});wt.textContent="worker";svg.appendChild(wt);
+
+  // tool + peer chips
+  function chip(pt,color,label){
+    const g=el("g",{});
+    g.appendChild(el("circle",{cx:pt.x,cy:pt.y,r:16,fill:"#fff",stroke:color,"stroke-width":2}));
+    g.appendChild(el("circle",{cx:pt.x,cy:pt.y,r:5,fill:color}));
+    const tx=el("text",{x:pt.x,y:pt.y+30,"text-anchor":"middle",fill:C.muted,"font-size":10.5,"font-family":"IBM Plex Sans"});tx.textContent=label;g.appendChild(tx);
+    svg.appendChild(g);
+  }
+  ["calendar","data","web"].forEach((l,i)=>chip(tools[i],C.mcp,l));
+  chip(peer,C.a2a,"peer worker");
+
+  if(!REDUCE){
+    function tick(){
+      for(const p of pulses){
+        p.t+=0.012; if(p.t>1)p.t-=1;
+        p.c.setAttribute("cx",p.a.x+(p.b.x-p.a.x)*p.t);
+        p.c.setAttribute("cy",p.a.y+(p.b.y-p.a.y)*p.t);
+      }
+      requestAnimationFrame(tick);
+    }
+    tick();
+  } else { pulses.forEach(p=>{p.c.setAttribute("cx",(p.a.x+p.b.x)/2);p.c.setAttribute("cy",(p.a.y+p.b.y)/2);}); }
+})();
+
+/* ============ MCP RIG ============ */
+(function(){
+  const svg=document.getElementById("mcpSvg");
+  const capList=document.getElementById("capList");
+  const capEmpty=document.getElementById("capEmpty");
+  const log=document.getElementById("mcpLog");
+  const resetBtn=document.getElementById("mcpReset");
+  if(!svg) return;
+
+  const wk={x:130,y:190};
+  const tools=[
+    {id:"cal",  name:"Calendar", cap:"schedule and check meetings", req:'listEvents({range:"this week"})', res:"3 events"},
+    {id:"db",   name:"Database", cap:"read and update records",     req:'query("orders WHERE new")',       res:"12 rows"},
+    {id:"web",  name:"Web",      cap:"look up fresh information",    req:'search("Q3 pricing")',             res:"8 sources"},
+    {id:"files",name:"Files",    cap:"read and write documents",    req:'read("brief.md")',                 res:"2.1 KB"},
+    {id:"code", name:"Code",     cap:"run scripts and compute",     req:'run("report.py")',                 res:"exit 0"},
+  ];
+  // arc positions on the right
+  const cx=360, cy=190, R=140;
+  tools.forEach((t,i)=>{
+    const a=(-58 + i*29)*Math.PI/180;
+    t.x=cx+R*Math.cos(a); t.y=cy+R*Math.sin(a); t.on=false;
+  });
+
+  // connectors first (under nodes)
+  tools.forEach(t=>{
+    t.line=el("path",{class:"conn",d:`M${wk.x} ${wk.y} L${t.x} ${t.y}`,stroke:C.mcp,"stroke-width":2.4,opacity:0});
+    svg.appendChild(t.line);
+  });
+
+  // worker
+  svg.appendChild(el("rect",{x:wk.x-42,y:wk.y-40,width:84,height:80,rx:16,fill:C.ink}));
+  svg.appendChild(el("rect",{x:wk.x-15,y:wk.y-16,width:30,height:26,rx:6,fill:C.paper}));
+  const wl=el("text",{x:wk.x,y:wk.y+30,"text-anchor":"middle",fill:"#fff","font-size":12,"font-family":"IBM Plex Sans"});wl.textContent="worker";svg.appendChild(wl);
+
+  // tool nodes
+  tools.forEach(t=>{
+    const g=el("g",{}); g.style.cursor="pointer";
+    t.disc=el("circle",{cx:t.x,cy:t.y,r:24,fill:"#fff",stroke:C.line,"stroke-width":2});
+    t.core=el("circle",{cx:t.x,cy:t.y,r:7,fill:C.faint||"#9AA7B4"});
+    const lab=el("text",{x:t.x,y:t.y+40,"text-anchor":"middle",fill:C.muted,"font-size":12,"font-family":"IBM Plex Sans"});lab.textContent=t.name;
+    const hit=el("circle",{class:"node-hit",cx:t.x,cy:t.y,r:34});
+    g.appendChild(t.disc);g.appendChild(t.core);g.appendChild(lab);g.appendChild(hit);
+    hit.addEventListener("click",()=>toggle(t));
+    hit.addEventListener("keydown",e=>{if(e.key==="Enter"||e.key===" "){e.preventDefault();toggle(t);}});
+    hit.setAttribute("tabindex","0"); hit.setAttribute("role","button"); hit.setAttribute("aria-label","Connect "+t.name);
+    svg.appendChild(g);
+    // capability list item
+    t.li=document.createElement("li");
+    t.li.innerHTML=`<span class="tick">+</span><span>${t.cap}</span>`;
+    capList.appendChild(t.li);
+  });
+
+  function render(){
+    let any=false;
+    tools.forEach(t=>{
+      any=any||t.on;
+      t.disc.setAttribute("stroke", t.on?C.mcp:C.line);
+      t.disc.setAttribute("fill",   t.on?"#E1F3F4":"#fff");
+      t.core.setAttribute("fill",   t.on?C.mcp:"#9AA7B4");
+      t.line.setAttribute("opacity",t.on?1:0);
+      t.line.setAttribute("class", t.on&&!REDUCE ? "conn flow" : "conn");
+      t.li.classList.toggle("on",t.on);
+    });
+    capEmpty.style.display = any?"none":"block";
+  }
+  function say(t){
+    log.innerHTML =
+      `<span class="dim">worker</span> <span class="arrow">→ mcp →</span> <span class="a">${t.name}</span><br>`+
+      `<span class="dim">call</span>  ${t.req}<br>`+
+      `<span class="a">${t.name}</span> <span class="arrow">→</span> <span class="dim">worker</span><br>`+
+      `<span class="dim">back</span>  ${t.res}`;
+  }
+  function idle(){ log.innerHTML='<span class="dim">// tap a tool to open a connection</span>'; }
+  function toggle(t){ t.on=!t.on; render(); if(t.on) say(t); else { const anyOn=tools.find(x=>x.on); anyOn?say(anyOn):idle(); } }
+
+  resetBtn.addEventListener("click",()=>{tools.forEach(t=>t.on=false);render();idle();});
+  render(); idle();
+})();
+
+/* ============ A2A RIG ============ */
+(function(){
+  const svg=document.getElementById("a2aSvg");
+  const goBtn=document.getElementById("a2aGo");
+  const resetBtn=document.getElementById("a2aReset");
+  const who=document.getElementById("a2aWho");
+  const role=document.getElementById("a2aRole");
+  const statusLbl=document.getElementById("a2aStatusLbl");
+  const log=document.getElementById("a2aLog");
+  if(!svg) return;
+
+  const team=[
+    {id:"plan", name:"Planner",    role:"breaks the goal into ordered steps", hand:"here's the plan: research, draft, review"},
+    {id:"res",  name:"Researcher", role:"gathers the facts and sources",      hand:"sending 8 sources and the key numbers"},
+    {id:"write",name:"Writer",     role:"turns findings into a clean draft",  hand:"draft ready — 600 words, passing it on"},
+    {id:"rev",  name:"Reviewer",   role:"checks, fixes, and finalizes",       hand:"approved — 2 fixes applied. done."},
+  ];
+  const y=120, x0=70, gap=(520-2*x0)/(team.length-1);
+  team.forEach((w,i)=>{w.x=x0+gap*i; w.y=y;});
+
+  // connectors
+  for(let i=0;i<team.length-1;i++){
+    svg.appendChild(el("path",{d:`M${team[i].x} ${y} L${team[i+1].x} ${y}`,stroke:C.line,"stroke-width":2.4,fill:"none","stroke-linecap":"round"}));
+  }
+  const litLinks=[];
+  for(let i=0;i<team.length-1;i++){
+    const p=el("path",{d:`M${team[i].x} ${y} L${team[i+1].x} ${y}`,stroke:C.a2a,"stroke-width":2.4,fill:"none","stroke-linecap":"round",opacity:0});
+    svg.appendChild(p); litLinks.push(p);
+  }
+  // nodes
+  team.forEach(w=>{
+    w.disc=el("circle",{cx:w.x,cy:w.y,r:26,fill:"#fff",stroke:C.line,"stroke-width":2.4});
+    svg.appendChild(w.disc);
+    const t1=el("text",{x:w.x,y:w.y+5,"text-anchor":"middle",fill:C.muted,"font-size":13,"font-weight":600,"font-family":"IBM Plex Sans"});
+    t1.textContent=w.name[0]; svg.appendChild(t1); w.initial=t1;
+    const t2=el("text",{x:w.x,y:w.y+48,"text-anchor":"middle",fill:C.muted,"font-size":12,"font-family":"IBM Plex Sans"});
+    t2.textContent=w.name; svg.appendChild(t2);
+  });
+  // travelling token
+  const token=el("circle",{r:7,fill:C.a2a,opacity:0}); svg.appendChild(token);
+
+  let running=false, timers=[];
+  function clearTimers(){ timers.forEach(clearTimeout); timers=[]; }
+  function reset(){
+    clearTimers(); running=false; goBtn.disabled=false;
+    team.forEach(w=>{w.disc.setAttribute("fill","#fff");w.disc.setAttribute("stroke",C.line);w.initial.setAttribute("fill",C.muted);});
+    litLinks.forEach(p=>p.setAttribute("opacity",0));
+    token.setAttribute("opacity",0);
+    statusLbl.textContent="Idle"; who.textContent="The team is waiting";
+    role.textContent="Press dispatch to send a task through the workers.";
+    log.innerHTML='<span class="dim">// press dispatch to send: "write this week\'s update"</span>';
+  }
+  function activate(i){
+    const w=team[i];
+    w.disc.setAttribute("fill","#FBEEDA"); w.disc.setAttribute("stroke",C.a2a); w.initial.setAttribute("fill",C.a2a);
+    statusLbl.textContent="Step "+(i+1)+" of "+team.length;
+    who.textContent=w.name;
+    role.textContent=w.role;
+    const to = i<team.length-1 ? team[i+1].name.toLowerCase() : "you";
+    log.innerHTML =
+      `<span class="b">${w.name.toLowerCase()}</span> <span class="arrow">→ a2a →</span> <span class="dim">${to}</span><br>`+
+      `<span class="dim">msg</span>  ${w.hand}`;
+  }
+  function travel(i,done){
+    if(REDUCE || i>=team.length-1){ done(); return; }
+    litLinks[i].setAttribute("opacity",1);
+    const a=team[i], b=team[i+1]; let t=0;
+    token.setAttribute("opacity",1);
+    (function move(){
+      t+=0.06;
+      token.setAttribute("cx",a.x+(b.x-a.x)*Math.min(t,1));
+      token.setAttribute("cy",a.y);
+      if(t<1){ requestAnimationFrame(move); } else { token.setAttribute("opacity",0); done(); }
+    })();
+  }
+  function run(){
+    if(running) return; running=true; goBtn.disabled=true;
+    team.forEach(w=>{w.disc.setAttribute("fill","#fff");w.disc.setAttribute("stroke",C.line);w.initial.setAttribute("fill",C.muted);});
+    litLinks.forEach(p=>p.setAttribute("opacity",0));
+    let i=0;
+    function stepIn(){
+      activate(i);
+      const dwell = REDUCE?0:850;
+      timers.push(setTimeout(()=>{
+        if(i<team.length-1){ travel(i,()=>{ i++; stepIn(); }); }
+        else { statusLbl.textContent="Complete"; who.textContent="Task finished"; role.textContent="Four workers, one job — handed off cleanly and returned to you."; running=false; goBtn.disabled=false; }
+      }, dwell));
+    }
+    stepIn();
+  }
+  goBtn.addEventListener("click",run);
+  resetBtn.addEventListener("click",reset);
+  reset();
+})();
+</script>
+</body>
+</html>

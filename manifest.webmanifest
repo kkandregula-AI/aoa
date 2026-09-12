@@ -1,0 +1,17 @@
+{
+  "name": "The Age of Agents",
+  "short_name": "Age of Agents",
+  "description": "A two-part interactive set on agentic AI — the shift to AI that acts, and the wiring (MCP & A2A) behind digital workers.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "id": "/",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0B1026",
+  "theme_color": "#16202B",
+  "icons": [
+    { "src": "./icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
