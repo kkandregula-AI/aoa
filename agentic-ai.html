@@ -281,7 +281,7 @@
   <div class="wrap">
     <p class="eyebrow">What an agent actually runs</p>
     <h2>Not one answer — a loop that keeps working.</h2>
-    <p class="lead sub">An agent doesn't stop at a reply. It cycles: understand, plan, act, and check its own work — again if needed. Hover a step.</p>
+    <p class="lead sub">An agent doesn't stop at a reply. It cycles: understand, plan, act, and check its own work — again if needed — it cycles through all eight on its own, or tap any step to jump.</p>
 
     <div class="loop-grid" style="margin-top:44px">
       <svg class="loop-svg" id="loopSvg" viewBox="0 0 400 400" role="img" aria-label="The agent loop"></svg>
@@ -628,54 +628,64 @@ const C = {
   ];
   const svg=document.getElementById("loopSvg");
   const detail=document.getElementById("capDetail");
-  const cx=200,cy=200,R=150;
-  let ns="http://www.w3.org/2000/svg";
-  let ring=document.createElementNS(ns,"circle");
+  if(!svg||!detail) return;
+  const ns="http://www.w3.org/2000/svg";
+  const cx=200,cy=200,R=150,N=caps.length,DWELL=4200,d2r=Math.PI/180;
+  const baseAng=i=>(-90+i*(360/N))*d2r;
+
+  const ring=document.createElementNS(ns,"circle");
   ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",R);
   ring.setAttribute("fill","none");ring.setAttribute("stroke","rgba(120,135,205,0.18)");ring.setAttribute("stroke-width","1.5");
   svg.appendChild(ring);
-  // travelling pulse
+
+  // marker rests on the active step, glides to the next
   const pulse=document.createElementNS(ns,"circle");
-  pulse.setAttribute("r","4.5");pulse.setAttribute("fill",C.agent);
+  pulse.setAttribute("r","5");pulse.setAttribute("fill",C.agent);
   svg.appendChild(pulse);
 
   const nodes=[];
   caps.forEach((c,i)=>{
-    const ang=(-90 + i*(360/caps.length))*Math.PI/180;
-    const x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
+    const ang=baseAng(i),x=cx+R*Math.cos(ang),y=cy+R*Math.sin(ang);
     const g=document.createElementNS(ns,"g");
-    g.setAttribute("class","cap-node"); g.setAttribute("tabindex","0");
-    g.setAttribute("role","button"); g.setAttribute("aria-label",c.t);
+    g.setAttribute("class","cap-node");g.setAttribute("tabindex","0");
+    g.setAttribute("role","button");g.setAttribute("aria-label","Step "+(i+1)+": "+c.t);
     const circ=document.createElementNS(ns,"circle");
-    circ.setAttribute("cx",x);circ.setAttribute("cy",y);circ.setAttribute("r","15");
+    circ.setAttribute("cx",x);circ.setAttribute("cy",y);circ.setAttribute("r","16");
     circ.setAttribute("fill","rgba(120,135,205,0.06)");circ.setAttribute("stroke","rgba(120,135,205,0.3)");circ.setAttribute("stroke-width","1.5");
     const tx=document.createElementNS(ns,"text");
     tx.setAttribute("x",x);tx.setAttribute("y",y+4);tx.setAttribute("text-anchor","middle");tx.textContent=i+1;
-    g.appendChild(circ);g.appendChild(tx);
-    g.addEventListener("mouseenter",()=>select(i));
-    g.addEventListener("focus",()=>select(i));
-    g.addEventListener("click",()=>select(i));
-    svg.appendChild(g); nodes.push({g,x,y});
+    const hit=document.createElementNS(ns,"circle"); // generous tap target for touch
+    hit.setAttribute("cx",x);hit.setAttribute("cy",y);hit.setAttribute("r","32");hit.setAttribute("fill","transparent");
+    g.appendChild(circ);g.appendChild(tx);g.appendChild(hit);
+    const jump=()=>goTo(i,true);
+    g.addEventListener("click",jump);
+    g.addEventListener("mouseenter",jump);
+    g.addEventListener("focus",jump);
+    svg.appendChild(g);nodes.push({g});
   });
 
-  function select(i){
+  let idx=0,curAng=baseAng(0),targetAng=baseAng(0),timer=null,visible=false;
+  function render(i){
     nodes.forEach((n,k)=>n.g.classList.toggle("active",k===i));
-    detail.innerHTML=`<div class="n">Step ${i+1} of 8</div><h3>${caps[i].t}</h3><p>${caps[i].d}</p>`;
+    detail.innerHTML=`<div class="n">Step ${i+1} of ${N}</div><h3>${caps[i].t}</h3><p>${caps[i].d}</p>`;
   }
-  select(0);
+  function place(){ pulse.setAttribute("cx",cx+R*Math.cos(curAng)); pulse.setAttribute("cy",cy+R*Math.sin(curAng)); }
+  function goTo(i,manual){
+    idx=((i%N)+N)%N;
+    const baseline=baseAng(idx);
+    targetAng=baseline+2*Math.PI*Math.round((curAng-baseline)/(2*Math.PI));
+    if(REDUCE){ curAng=targetAng; place(); }
+    render(idx);
+    if(manual) restart();
+  }
+  function advance(){ goTo(idx+1,false); }
+  function start(){ if(timer||REDUCE) return; timer=setInterval(advance,DWELL); }
+  function stop(){ if(timer){ clearInterval(timer); timer=null; } }
+  function restart(){ stop(); if(visible) start(); }
+  function anim(){ if(!REDUCE){ curAng+=(targetAng-curAng)*0.14; place(); } requestAnimationFrame(anim); }
 
-  // animate pulse around ring when visible
-  let ang=-Math.PI/2, active=false;
-  new IntersectionObserver((es)=>{es.forEach(e=>active=e.isIntersecting);},{threshold:.2}).observe(svg);
-  function tick(){
-    if(active && !REDUCE){ ang+=0.012;
-      pulse.setAttribute("cx", cx+R*Math.cos(ang));
-      pulse.setAttribute("cy", cy+R*Math.sin(ang));
-    }
-    requestAnimationFrame(tick);
-  }
-  pulse.setAttribute("cx",cx);pulse.setAttribute("cy",cy-R);
-  tick();
+  new IntersectionObserver((es)=>{es.forEach(e=>{ visible=e.isIntersecting; visible?start():stop(); });},{threshold:.25}).observe(svg);
+  render(0); place(); anim();
 })();
 
 /* ============================================================
