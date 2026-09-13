@@ -3,14 +3,12 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-<title>The Age of AI That Acts</title>
-<meta name="description" content="An interactive look at agentic AI — from AI that answers, to AI that assists, to AI that acts. Explore MCP, A2A, and the question of how much authority we give machines." />
+<title>The Age of Agents — two interactive pieces</title>
+<meta name="description" content="A two-part interactive set on agentic AI: the shift from AI that answers to AI that acts, and the wiring — MCP and A2A — that lets digital workers plug in and team up." />
 
-<!-- PWA -->
-<meta name="theme-color" content="#0B1026" />
+<meta name="theme-color" content="#16202B" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
-<meta name="apple-mobile-web-app-title" content="AI That Acts" />
+<meta name="apple-mobile-web-app-title" content="Age of Agents" />
 <link rel="icon" type="image/svg+xml" href="./favicon.svg" />
 <link rel="icon" type="image/png" sizes="192x192" href="./icons/icon-192.png" />
 <link rel="apple-touch-icon" href="./icons/apple-touch-icon.png" />
@@ -18,310 +16,155 @@
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,600;12..96,700;12..96,800&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,700;12..96,800&family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;1,6..72,400&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
   :root{
-    --bg:#0B1026;
-    --bg-2:#070A1C;
-    --panel:rgba(18,24,54,0.55);
-    --ink:#E7ECFF;
-    --muted:#8590C0;
-    --faint:#4A5488;
-    --line:rgba(120,135,205,0.16);
-
-    --human:#F2C14E;   /* you */
-    --agent:#5EEAD4;   /* agent */
-    --tool:#8B9CFF;    /* tools & data — MCP */
-    --peer:#C084FC;    /* other agents — A2A */
-
-    --maxw:1080px;
-    --display:"Bricolage Grotesque", ui-sans-serif, system-ui, sans-serif;
-    --body:"Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+    --ink:#16202B;
+    --indigo:#0B1026;
+    --agent:#5EEAD4;
+    --warm:#F2C14E;
+    --paper:#EDF1F5;
+    --mcp:#0E9AA7;
+    --a2a:#D9820F;
+    --bric:"Bricolage Grotesque",ui-sans-serif,system-ui,sans-serif;
+    --news:"Newsreader",Georgia,serif;
+    --sans:"IBM Plex Sans",ui-sans-serif,system-ui,sans-serif;
   }
-
   *{box-sizing:border-box}
-  html{scroll-behavior:smooth;color-scheme:dark;background:#0B1026}
-  body{
-    margin:0;
-    background-color:var(--bg);
-    background-image:
-      radial-gradient(1200px 700px at 80% -10%, rgba(94,234,212,0.10), transparent 60%),
-      radial-gradient(1000px 600px at 0% 20%, rgba(139,156,255,0.10), transparent 55%);
-    color:var(--ink);
-    font-family:var(--body);
-    line-height:1.6;
-    -webkit-font-smoothing:antialiased;
-    overflow-x:hidden;
-  }
-  a{color:inherit}
-  ::selection{background:rgba(94,234,212,0.28)}
+  html{background:var(--ink);color-scheme:dark light}
+  body{margin:0;font-family:var(--sans);color:#fff;-webkit-font-smoothing:antialiased;
+    min-height:100vh;min-height:100svh;display:flex;flex-direction:column}
+  a{text-decoration:none;color:inherit}
 
-  .wrap{max-width:var(--maxw);margin:0 auto;padding:0 24px}
-  section{position:relative}
+  /* masthead */
+  .mast{background:var(--ink);padding:clamp(26px,5vh,48px) 24px clamp(22px,4vh,38px);text-align:center}
+  .mast .brandmark{display:inline-flex;align-items:center;gap:9px;color:#8FA0B4;font-size:0.8rem;margin-bottom:16px}
+  .mast .brandmark i{width:8px;height:8px;border-radius:50%;background:var(--agent)}
+  .mast h1{font-family:var(--bric);font-weight:800;letter-spacing:-0.03em;line-height:0.98;
+    font-size:clamp(2.4rem,6.5vw,4.4rem);margin:0}
+  .mast h1 .b{color:var(--paper)} .mast h1 .a{color:var(--agent)}
+  .mast p{color:#9AA9BC;max-width:52ch;margin:16px auto 0;font-size:clamp(1rem,1.5vw,1.14rem)}
 
-  h1,h2,h3{font-family:var(--display);font-weight:700;line-height:1.02;letter-spacing:-0.02em;margin:0}
-  p{margin:0}
-  .lead{color:var(--muted);font-size:clamp(1.02rem,1.4vw,1.22rem);max-width:60ch}
+  /* diptych */
+  .doors{flex:1;display:grid;grid-template-columns:1fr 1fr}
+  .door{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
+    padding:clamp(30px,4.5vw,56px);min-height:clamp(340px,52vh,560px);transition:transform .35s ease}
+  .door:focus-visible{outline:3px solid var(--agent);outline-offset:-6px}
+  .door .part{font-family:var(--bric);font-weight:700;font-size:0.86rem;letter-spacing:0.02em}
+  .door h2{margin:0.5rem 0 0;line-height:1.02}
+  .door .blurb{margin-top:14px;max-width:34ch;font-size:1rem;line-height:1.55}
+  .door .foot{display:flex;align-items:center;gap:10px;font-family:var(--bric);font-weight:700;font-size:1rem;margin-top:26px}
+  .door .foot .line{flex:0 0 34px;height:2px;transition:flex-basis .35s ease}
+  .door:hover .foot .line{flex-basis:60px}
+  .door .motif{position:absolute;right:-10px;top:50%;transform:translateY(-50%);opacity:.9;pointer-events:none}
 
-  /* ---------- HERO ---------- */
-  .hero{min-height:100vh;min-height:100svh;display:flex;align-items:flex-end;padding-bottom:7vh;overflow:hidden}
-  #net{position:absolute;inset:0;width:100%;height:100%;display:block;z-index:0;touch-action:none}
-  .hero .wrap{position:relative;z-index:2;width:100%}
-  .hero-grad{position:absolute;inset:0;z-index:1;pointer-events:none;
-    background:linear-gradient(180deg, rgba(11,16,38,0) 40%, rgba(11,16,38,0.55) 78%, var(--bg) 100%)}
+  /* Door I — dark, "acts" */
+  .d1{background:
+      radial-gradient(600px 380px at 80% 10%, rgba(94,234,212,0.14), transparent 60%),
+      radial-gradient(500px 320px at 10% 90%, rgba(139,156,255,0.14), transparent 55%),
+      var(--indigo);color:#E7ECFF}
+  .d1 .part{color:var(--agent)}
+  .d1 h2{font-family:var(--bric);font-weight:800;letter-spacing:-0.03em;font-size:clamp(1.9rem,3.6vw,2.9rem)}
+  .d1 h2 .g{color:var(--agent)}
+  .d1 .blurb{color:#9AA6D8}
+  .d1 .foot{color:var(--agent)} .d1 .foot .line{background:var(--agent)}
 
-  .kicker{display:inline-flex;align-items:center;gap:10px;color:var(--agent);
-    font-weight:600;font-size:0.82rem;letter-spacing:0.02em;margin-bottom:22px;
-    opacity:0;transform:translateY(8px);animation:rise .9s .1s forwards}
-  .kicker .dot{width:8px;height:8px;border-radius:50%;background:var(--agent);
-    box-shadow:0 0 0 0 rgba(94,234,212,0.6);animation:pulse 2.4s infinite}
-  @keyframes pulse{0%{box-shadow:0 0 0 0 rgba(94,234,212,0.5)}70%{box-shadow:0 0 0 12px rgba(94,234,212,0)}100%{box-shadow:0 0 0 0 rgba(94,234,212,0)}}
+  /* Door II — light, "workers" */
+  .d2{background:
+      radial-gradient(500px 320px at 85% 15%, rgba(14,154,167,0.10), transparent 60%),
+      var(--paper);color:var(--ink)}
+  .d2 .part{color:var(--mcp)}
+  .d2 h2{font-family:var(--news);font-weight:500;letter-spacing:-0.01em;font-size:clamp(1.9rem,3.6vw,2.9rem)}
+  .d2 h2 em{font-style:italic}
+  .d2 .blurb{color:#5C6B7A}
+  .d2 .foot{color:var(--a2a)} .d2 .foot .line{background:var(--a2a)}
 
-  h1{font-size:clamp(2.7rem,7.4vw,5.6rem);max-width:15ch;text-shadow:0 2px 26px rgba(11,16,38,0.82),0 1px 3px rgba(11,16,38,0.6)}
-  h1 .warm{color:var(--human)}
-  h1 .cool{color:var(--agent);text-shadow:0 0 26px rgba(94,234,212,0.55),0 2px 20px rgba(11,16,38,0.7)}
-  h1 .talks-w{color:#C2CAEC;text-decoration:line-through;text-decoration-color:rgba(194,202,236,0.55);text-decoration-thickness:2px}
-  .hero p.lead{margin-top:22px}
-  .hero .kicker,.hero h1>span,.hero .lead,.hero .hint{opacity:0}
-  .r1{animation:rise .9s .15s forwards}
-  .r2{animation:rise .9s .30s forwards}
-  .r3{animation:rise .9s .48s forwards}
-  .r4{animation:rise 1s .8s forwards}
-  @keyframes rise{to{opacity:1;transform:none}}
-  h1>span{display:block;transform:translateY(14px)}
-  h1 .talks-w,h1 .cool{display:inline;opacity:1;transform:none}
-  .lead{transform:translateY(10px)}
-  .hint{margin-top:30px;color:var(--faint);font-size:0.8rem;display:flex;align-items:center;gap:8px;transform:translateY(10px)}
-  .hint svg{width:16px;height:16px;stroke:var(--faint)}
+  .tags{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}
+  .tag{font-size:0.74rem;padding:4px 10px;border-radius:999px;font-weight:500}
+  .d1 .tag{background:rgba(94,234,212,0.12);color:var(--agent)}
+  .d2 .tag.m{background:rgba(14,154,167,0.12);color:var(--mcp)}
+  .d2 .tag.a{background:rgba(217,130,15,0.14);color:var(--a2a)}
 
-  /* ---------- shared section frame ---------- */
-  .band{padding:clamp(70px,11vh,130px) 0}
-  .eyebrow{font-family:var(--display);font-weight:600;color:var(--muted);font-size:0.9rem;margin-bottom:14px}
-  .band h2{font-size:clamp(2rem,4.4vw,3.2rem);max-width:16ch}
-  .band .sub{margin-top:18px}
+  /* footer */
+  .foota{background:var(--ink);text-align:center;padding:clamp(24px,4vh,40px) 24px;color:#6B7C90;font-size:0.85rem;line-height:1.9}
+  .foota strong{color:#9AA9BC;font-weight:600}
+  .seam{height:1px;background:linear-gradient(90deg,var(--indigo),var(--paper))}
 
-  /* ---------- ERAS ---------- */
-  .segs{display:flex;flex-wrap:wrap;gap:10px;margin:34px 0 30px}
-  .seg{appearance:none;border:1px solid var(--line);background:rgba(255,255,255,0.02);
-    color:var(--muted);font-family:var(--display);font-weight:600;font-size:0.98rem;
-    padding:11px 20px;border-radius:999px;cursor:pointer;transition:.35s;letter-spacing:-0.01em}
-  .seg:hover{color:var(--ink);border-color:rgba(120,135,205,0.4)}
-  .seg[aria-selected="true"]{color:var(--bg);background:var(--agent);border-color:var(--agent)}
-  .seg:focus-visible{outline:2px solid var(--agent);outline-offset:3px}
+  /* motif animations */
+  .pulse{animation:pl 2.6s ease-in-out infinite}
+  .pulse.b{animation-delay:.6s} .pulse.c{animation-delay:1.2s}
+  @keyframes pl{0%,100%{opacity:.35;r:4}50%{opacity:1;r:6}}
+  .slide{animation:sl 2.4s ease-in-out infinite}
+  @keyframes sl{0%,100%{transform:translateX(0)}50%{transform:translateX(46px)}}
 
-  .era-stage{display:grid;grid-template-columns:1.05fr 1fr;gap:40px;align-items:center;
-    border:1px solid var(--line);border-radius:22px;background:var(--panel);
-    padding:clamp(24px,4vw,44px);backdrop-filter:blur(8px)}
-  .era-quote{font-family:var(--display);font-weight:700;font-size:clamp(1.7rem,3.6vw,2.7rem);
-    letter-spacing:-0.02em;line-height:1.08;min-height:2.2em}
-  .era-quote .who{display:block;font-size:0.62em;color:var(--muted);font-weight:500;margin-bottom:12px;letter-spacing:0}
-  .era-desc{color:var(--muted);margin-top:16px;font-size:1.02rem}
-  .era-viz{aspect-ratio:1/1;width:100%;max-width:340px;justify-self:center}
-  .era-viz svg{width:100%;height:100%;overflow:visible}
-  .fade-swap{animation:soft .5s ease}
-  @keyframes soft{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
-
-  /* ---------- LOOP ---------- */
-  .loop-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-  .loop-svg{width:100%;max-width:520px;justify-self:center;overflow:visible}
-  .cap-node{cursor:pointer}
-  .cap-node circle{transition:.3s}
-  .cap-node:hover circle,.cap-node.active circle{fill:rgba(94,234,212,0.16);stroke:var(--agent)}
-  .cap-node text{fill:var(--muted);font-family:var(--body);font-size:12.5px;transition:.3s}
-  .cap-node:hover text,.cap-node.active text{fill:var(--ink)}
-  .cap-detail{border-left:2px solid var(--agent);padding:8px 0 8px 22px;min-height:120px}
-  .cap-detail .n{font-family:var(--display);font-weight:600;color:var(--faint);font-size:0.85rem}
-  .cap-detail h3{font-size:1.5rem;margin:6px 0 8px;color:var(--ink)}
-  .cap-detail p{color:var(--muted)}
-
-  /* ---------- EQUATION ---------- */
-  .eq-note{color:var(--muted);margin-bottom:8px}
-  .eq{display:flex;flex-wrap:wrap;gap:12px 14px;align-items:center;margin:26px 0}
-  .term{position:relative;border:1px solid var(--line);background:rgba(255,255,255,0.02);
-    border-radius:14px;padding:14px 18px;cursor:pointer;transition:.3s;text-align:left;
-    min-width:132px}
-  .term:focus-visible{outline:2px solid var(--agent);outline-offset:3px}
-  .term .tt{font-family:var(--display);font-weight:600;font-size:1.02rem;color:var(--ink)}
-  .term .td{font-size:0.8rem;color:var(--muted);margin-top:2px}
-  .term[data-on="false"]{opacity:0.32;filter:grayscale(0.5)}
-  .term[data-on="true"]{box-shadow:0 0 0 1px rgba(94,234,212,0.5), 0 8px 30px -14px rgba(94,234,212,0.5);border-color:transparent}
-  .plus{font-family:var(--display);color:var(--faint);font-size:1.4rem;user-select:none}
-  .verdict{margin-top:12px;font-family:var(--display);font-weight:600;font-size:1.15rem;transition:.3s}
-  .verdict.ok{color:var(--agent)}
-  .verdict.bad{color:var(--human)}
-
-  /* ---------- TRUST DIAL ---------- */
-  .trust-grid{display:grid;grid-template-columns:1fr 1fr;gap:48px;align-items:center}
-  .dial-wrap{justify-self:center;width:100%;max-width:360px;text-align:center}
-  .dial-wrap svg{width:100%;overflow:visible}
-  .dial input[type=range]{width:82%;margin-top:18px;accent-color:var(--agent);cursor:pointer}
-  .dial-read{font-family:var(--display);font-weight:700;font-size:1.35rem;margin-top:14px}
-  .dial-scene h3{font-size:1.5rem;margin-bottom:10px}
-  .dial-scene p{color:var(--muted)}
-  .dial-scene .tag{display:inline-block;margin-top:16px;font-size:0.82rem;color:var(--muted);
-    border:1px solid var(--line);border-radius:999px;padding:6px 14px}
-
-  /* ---------- CLOSE ---------- */
-  .close{padding:clamp(90px,16vh,180px) 0 60px;text-align:center}
-  .close h2{font-size:clamp(2.1rem,5vw,3.6rem);max-width:20ch;margin:0 auto}
-  .close .talks{color:var(--muted)}
-  .close .acts{color:var(--agent)}
-  .sign{margin-top:44px;color:var(--faint);font-size:0.86rem;line-height:1.8}
-  .sign strong{color:var(--muted);font-weight:600}
-
-  /* legend */
-  .legend{display:flex;flex-wrap:wrap;gap:16px 22px;margin-top:26px}
-  .legend span{display:inline-flex;align-items:center;gap:9px;color:var(--muted);font-size:0.85rem}
-  .legend i{width:11px;height:11px;border-radius:50%}
-
-  /* install button */
-  #install{position:fixed;right:18px;bottom:18px;z-index:50;display:none;
-    align-items:center;gap:9px;background:var(--agent);color:var(--bg);border:none;
-    font-family:var(--display);font-weight:600;font-size:0.92rem;padding:12px 18px;
-    border-radius:14px;cursor:pointer;box-shadow:0 14px 40px -12px rgba(94,234,212,0.6)}
-  #install svg{width:17px;height:17px;stroke:var(--bg)}
-
-  /* mode toggle for the hero network */
-  .modes{display:inline-flex;gap:6px;padding:5px;border:1px solid var(--line);
-    border-radius:999px;background:rgba(7,10,28,0.5);backdrop-filter:blur(6px);margin-bottom:26px}
-  .modes button{appearance:none;border:none;background:transparent;color:var(--muted);
-    font-family:var(--display);font-weight:600;font-size:0.86rem;padding:7px 15px;border-radius:999px;cursor:pointer;transition:.3s}
-  .modes button[aria-pressed="true"]{background:rgba(94,234,212,0.14);color:var(--agent)}
-  .modes button:focus-visible{outline:2px solid var(--agent);outline-offset:2px}
-  .mode-cap{margin:12px 0 0;color:var(--muted);font-size:0.88rem;min-height:1.3em;transition:color .3s}
-  .mode-cap b{font-weight:600}
-  .mode-cap.mcp b{color:var(--tool)} .mode-cap.a2a b{color:var(--peer)} .mode-cap.all b{color:var(--agent)}
-
-  @media (max-width:820px){
-    .era-stage,.loop-grid,.trust-grid{grid-template-columns:1fr}
-    .era-viz{order:-1}
-    .loop-svg{max-width:400px}
-    .close .sign br{display:none}
-  }
-  @media (max-width:600px){
-    .hero{padding-bottom:4vh}
-    .kicker{margin-bottom:14px}
-    .modes{margin-bottom:16px}
-    h1{font-size:clamp(2rem,8.2vw,2.6rem);max-width:none;line-height:1.06}
-    .hero p.lead{margin-top:14px;font-size:1rem}
-    .legend{margin-top:16px;gap:10px 16px}
+  @media (max-width:760px){
+    .doors{grid-template-columns:1fr}
+    .door .motif{opacity:.5;right:-30px}
+    .seam{background:linear-gradient(180deg,var(--indigo),var(--paper))}
   }
   @media (prefers-reduced-motion:reduce){
-    *{animation-duration:0.001ms !important;animation-iteration-count:1 !important;transition-duration:0.001ms !important}
+    *{animation:none!important;transition:none!important}
     html{scroll-behavior:auto}
   }
 </style>
 </head>
 <body>
 
-<!-- ============ HERO ============ -->
-<section class="hero" id="top">
-  <canvas id="net" aria-hidden="true"></canvas>
-  <div class="hero-grad" aria-hidden="true"></div>
-  <div class="wrap">
-    <div class="modes r4" role="group" aria-label="Network view">
-      <button data-mode="all" aria-pressed="true">Overview</button>
-      <button data-mode="mcp" aria-pressed="false">MCP</button>
-      <button data-mode="a2a" aria-pressed="false">A2A</button>
-    </div>
-    <p class="mode-cap r4" id="modeCap" aria-live="polite"></p>
-    <span class="kicker"><span class="dot"></span>Agentic AI</span>
-    <h1>
-      <span class="r1">The age of AI that <span class="talks-w">talks</span></span>
-      <span class="r2">is becoming the age of</span>
-      <span class="r3">AI that <span class="cool">acts</span>.</span>
-    </h1>
-    <p class="lead r3">A human sets the goal. Agents plan, research, use tools, and hand work to one another. This is that shift — drag the nodes, and switch how they connect.</p>
-    <div class="legend r4" aria-hidden="true">
-      <span><i style="background:var(--human)"></i>You</span>
-      <span><i style="background:var(--agent)"></i>Agent</span>
-      <span><i style="background:var(--tool)"></i>Tools &amp; data</span>
-      <span><i style="background:var(--peer)"></i>Other agents</span>
-    </div>
-  </div>
-</section>
+  <header class="mast">
+    <span class="brandmark"><i></i>An interactive set</span>
+    <h1><span class="b">The age of</span> <span class="a">agents</span></h1>
+    <p>Two pieces on how AI stops answering and starts doing — the shift itself, and the wiring underneath it. Pick a door.</p>
+  </header>
 
-<!-- ============ ERAS ============ -->
-<section class="band">
-  <div class="wrap">
-    <p class="eyebrow">Three ways we've asked machines for help</p>
-    <h2>The question we ask keeps getting bigger.</h2>
-    <div class="segs" role="tablist" aria-label="Eras of AI">
-      <button class="seg" role="tab" aria-selected="true"  data-era="0">Ask</button>
-      <button class="seg" role="tab" aria-selected="false" data-era="1">Assist</button>
-      <button class="seg" role="tab" aria-selected="false" data-era="2">Act</button>
-    </div>
-
-    <div class="era-stage">
+  <main class="doors">
+    <a class="door d1" href="./agentic-ai.html" aria-label="Open Part One: The Age of AI That Acts">
+      <svg class="motif" width="240" height="240" viewBox="0 0 240 240" aria-hidden="true">
+        <g stroke="#5EEAD4" stroke-width="1.4" opacity="0.5">
+          <line x1="120" y1="120" x2="60" y2="70"/><line x1="120" y1="120" x2="185" y2="80"/>
+          <line x1="120" y1="120" x2="175" y2="170"/><line x1="120" y1="120" x2="70" y2="175"/>
+        </g>
+        <circle cx="120" cy="120" r="9" fill="#F2C14E"/>
+        <circle class="pulse"   cx="60"  cy="70"  r="5" fill="#5EEAD4"/>
+        <circle class="pulse b" cx="185" cy="80"  r="5" fill="#8B9CFF"/>
+        <circle class="pulse c" cx="175" cy="170" r="5" fill="#C084FC"/>
+        <circle class="pulse b" cx="70"  cy="175" r="5" fill="#5EEAD4"/>
+      </svg>
       <div>
-        <div class="era-quote" id="eraQuote"></div>
-        <p class="era-desc" id="eraDesc"></p>
+        <div class="part">Part I</div>
+        <h2>The age of AI that <span class="g">acts</span></h2>
+        <p class="blurb">The shift from “what should I do?” to “do it for me.” Drag the network, watch a task loop, and set the dial on how much you hand over.</p>
+        <div class="tags"><span class="tag">the why</span><span class="tag">ask → assist → act</span></div>
       </div>
-      <div class="era-viz" id="eraViz" aria-hidden="true"></div>
-    </div>
-  </div>
-</section>
+      <div class="foot"><span class="line"></span>Enter Part I</div>
+    </a>
 
-<!-- ============ LOOP ============ -->
-<section class="band" style="background:linear-gradient(180deg,transparent,rgba(7,10,28,0.6),transparent)">
-  <div class="wrap">
-    <p class="eyebrow">What an agent actually runs</p>
-    <h2>Not one answer — a loop that keeps working.</h2>
-    <p class="lead sub">An agent doesn't stop at a reply. It cycles: understand, plan, act, and check its own work — again if needed. Hover a step.</p>
-
-    <div class="loop-grid" style="margin-top:44px">
-      <svg class="loop-svg" id="loopSvg" viewBox="0 0 400 400" role="img" aria-label="The agent loop"></svg>
-      <div class="cap-detail" id="capDetail" aria-live="polite"></div>
-    </div>
-  </div>
-</section>
-
-<!-- ============ EQUATION ============ -->
-<section class="band">
-  <div class="wrap">
-    <p class="eyebrow">The real requirement</p>
-    <h2>A trustworthy agent isn't just a smarter model.</h2>
-    <p class="eq-note lead sub">Toggle a piece off to see what's missing. Intelligence alone doesn't add up.</p>
-    <div class="eq" id="eq"></div>
-    <div class="verdict ok" id="verdict"></div>
-  </div>
-</section>
-
-<!-- ============ TRUST DIAL ============ -->
-<section class="band" style="background:linear-gradient(180deg,transparent,rgba(7,10,28,0.6),transparent)">
-  <div class="wrap">
-    <p class="eyebrow">The question underneath all of it</p>
-    <h2>If an agent can act for you, how much do you hand over?</h2>
-
-    <div class="trust-grid" style="margin-top:44px">
-      <div class="dial-wrap dial">
-        <svg id="dialSvg" viewBox="0 0 220 150" aria-hidden="true"></svg>
-        <div class="dial-read" id="dialRead"></div>
-        <input type="range" id="dialRange" min="0" max="100" value="35"
-               aria-label="How much authority to give the agent" />
+    <a class="door d2" href="./digital-workers.html" aria-label="Open Part Two: Digital Workers">
+      <svg class="motif" width="240" height="240" viewBox="0 0 240 240" aria-hidden="true">
+        <line x1="70" y1="120" x2="170" y2="120" stroke="#0E9AA7" stroke-width="2" opacity="0.5"/>
+        <rect x="52" y="104" width="32" height="32" rx="7" fill="#16202B"/>
+        <circle cx="184" cy="120" r="15" fill="#fff" stroke="#D9820F" stroke-width="2"/>
+        <circle cx="184" cy="120" r="5" fill="#D9820F"/>
+        <circle class="slide" cx="88" cy="120" r="5" fill="#0E9AA7"/>
+      </svg>
+      <div>
+        <div class="part">Part II</div>
+        <h2>Digital <em>workers</em></h2>
+        <p class="blurb">The wiring that makes agents useful. Plug tools into a worker, then dispatch one task across a whole team — and see both protocols at work.</p>
+        <div class="tags"><span class="tag m">MCP</span><span class="tag a">A2A</span><span class="tag m">the how</span></div>
       </div>
-      <div class="dial-scene" id="dialScene"></div>
-    </div>
-  </div>
-</section>
+      <div class="foot"><span class="line"></span>Enter Part II</div>
+    </a>
+  </main>
 
-<!-- ============ CLOSE ============ -->
-<section class="close">
-  <div class="wrap">
-    <h2>The future may not be human <span class="talks">versus</span> AI.<br>It may be human, agents, and <span class="acts">other agents</span> — working together, with people keeping the decisions that matter.</h2>
-    <p class="sign">
-      <strong>Designed &amp; Architected by Krishnamurthy Kandregula · Made by Claude</strong><br>
-      An interactive PWA · MCP connects agents to tools &amp; data · A2A connects agents to each other
-    </p>
-  </div>
-</section>
+  <div class="seam" aria-hidden="true"></div>
 
-<button id="install" aria-label="Install this app">
-  <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>
-  Install app
-</button>
+  <footer class="foota">
+    <strong>Designed &amp; Architected by Krishnamurthy Kandregula · Made by Claude</strong><br>
+    A two-part interactive set on agentic AI
+  </footer>
 
+<button id="install" aria-label="Install this app" style="position:fixed;right:16px;bottom:16px;z-index:60;display:none;align-items:center;gap:8px;background:#5EEAD4;color:#0B1026;border:none;font-family:'IBM Plex Sans',system-ui,sans-serif;font-weight:600;font-size:.9rem;padding:11px 16px;border-radius:12px;cursor:pointer;box-shadow:0 14px 40px -12px rgba(0,0,0,.5)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0B1026" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Install</button>
 <script>
 /* PWA — real manifest (linked in <head>) + service worker for offline-after-first-load + install */
 (function(){
@@ -336,433 +179,6 @@
   window.addEventListener("appinstalled",function(){ if(btn) btn.style.display="none"; });
 })();
 
-const REDUCE = window.matchMedia("(prefers-reduced-motion:reduce)").matches;
-const css = getComputedStyle(document.documentElement);
-const C = {
-  human:css.getPropertyValue("--human").trim(),
-  agent:css.getPropertyValue("--agent").trim(),
-  tool: css.getPropertyValue("--tool").trim(),
-  peer: css.getPropertyValue("--peer").trim(),
-  faint:"#394170"
-};
-
-/* ============================================================
-   1.  HERO — living agent network (drag + MCP/A2A modes)
-   ============================================================ */
-(function(){
-  const canvas=document.getElementById("net");
-  const ctx=canvas.getContext("2d");
-  let W,H,DPR;
-  let hover=null, drag=null;   // declared up front so the render loop can safely read them
-
-  // node type -> color
-  const col={you:C.human, agent:C.agent, tool:C.tool, peer:C.peer};
-  const rad={you:14, agent:11, tool:7.5, peer:9};
-
-  // build graph (relative coords 0..1, resolved on resize)
-  const N=[
-    {id:"you",  t:"you",   x:.30,y:.42,label:"You"},
-    {id:"a1",   t:"agent", x:.52,y:.30,label:"Planner agent"},
-    {id:"a2",   t:"agent", x:.55,y:.58,label:"Research agent"},
-    {id:"a3",   t:"agent", x:.74,y:.44,label:"Builder agent"},
-    {id:"t1",   t:"tool",  x:.42,y:.16,label:"Calendar"},
-    {id:"t2",   t:"tool",  x:.40,y:.72,label:"Database"},
-    {id:"t3",   t:"tool",  x:.66,y:.74,label:"Web / API"},
-    {id:"t4",   t:"tool",  x:.86,y:.28,label:"Files"},
-    {id:"t5",   t:"tool",  x:.90,y:.58,label:"Code"},
-    {id:"p1",   t:"peer",  x:.72,y:.18,label:"Partner agent"},
-    {id:"p2",   t:"peer",  x:.88,y:.78,label:"Vendor agent"},
-  ];
-  // link kind: cmd (you->agent), mcp (agent->tool), a2a (agent<->agent/peer)
-  const L=[
-    {a:"you",b:"a1",k:"cmd"},{a:"you",b:"a2",k:"cmd"},
-    {a:"a1",b:"t1",k:"mcp"},{a:"a2",b:"t2",k:"mcp"},{a:"a2",b:"t3",k:"mcp"},
-    {a:"a3",b:"t4",k:"mcp"},{a:"a3",b:"t5",k:"mcp"},{a:"a1",b:"t3",k:"mcp"},
-    {a:"a1",b:"a2",k:"a2a"},{a:"a2",b:"a3",k:"a2a"},{a:"a1",b:"a3",k:"a2a"},
-    {a:"a1",b:"p1",k:"a2a"},{a:"a3",b:"p2",k:"a2a"},
-  ];
-  const byId={}; N.forEach(n=>byId[n.id]=n);
-  L.forEach(l=>{l.A=byId[l.a];l.B=byId[l.b];});
-
-  let mode="all";
-  const linkColor=l=> l.k==="mcp"?C.tool : l.k==="a2a"?C.peer : "#5A6598";
-  const linkActive=l=> mode==="all" ? true : (mode==="mcp"? l.k==="mcp" : l.k==="a2a");
-
-  // particles flow along active links
-  const parts=[];
-  function seedParts(){
-    parts.length=0;
-    L.forEach(l=>{ const n = l.k==="cmd"?1:2;
-      for(let i=0;i<n;i++) parts.push({l, p:Math.random(), sp:0.0016+Math.random()*0.0022});
-    });
-  }
-  seedParts();
-
-  function resize(){
-    DPR=Math.min(window.devicePixelRatio||1,2);
-    W=canvas.clientWidth||window.innerWidth; H=canvas.clientHeight||window.innerHeight;
-    canvas.width=W*DPR; canvas.height=H*DPR;
-    ctx.setTransform(DPR,0,0,DPR,0,0);
-    N.forEach(n=>{ if(n.px===undefined){n.px=n.x*W; n.py=n.y*H; n.vx=0; n.vy=0;} });
-  }
-  window.addEventListener("resize",()=>{ // keep relative anchor targets
-    N.forEach(n=>{n.tx=n.x; n.ty=n.y;}); resize();
-    N.forEach(n=>{n.px=n.x*W;n.py=n.y*H;});
-  });
-  resize();
-
-  // physics targets (gentle spring back to layout so it feels alive but stable)
-  function step(){
-    for(const n of N){
-      if(n===drag) continue;
-      const tx=n.x*W, ty=n.y*H;
-      n.vx += (tx-n.px)*0.006;
-      n.vy += (ty-n.py)*0.006;
-    }
-    // light repulsion so dragged nodes push others
-    for(let i=0;i<N.length;i++){
-      for(let j=i+1;j<N.length;j++){
-        const a=N[i],b=N[j];
-        let dx=a.px-b.px, dy=a.py-b.py; let d2=dx*dx+dy*dy;
-        const min=70; if(d2<min*min && d2>0.01){
-          const d=Math.sqrt(d2); const f=(min-d)/d*0.12;
-          if(a!==drag){a.vx+=dx*f;a.vy+=dy*f;}
-          if(b!==drag){b.vx-=dx*f;b.vy-=dy*f;}
-        }
-      }
-    }
-    for(const n of N){
-      if(n===drag) continue;
-      n.vx*=0.86; n.vy*=0.86;
-      n.px+=n.vx; n.py+=n.vy;
-    }
-  }
-
-  let t=0;
-  function draw(){
-    t+=1;
-    ctx.clearRect(0,0,W,H);
-
-    // links
-    for(const l of L){
-      const act=linkActive(l);
-      ctx.beginPath();
-      ctx.moveTo(l.A.px,l.A.py); ctx.lineTo(l.B.px,l.B.py);
-      ctx.strokeStyle=linkColor(l);
-      ctx.globalAlpha= act? 0.6 : 0.14;
-      ctx.lineWidth= act? 2 : 1;
-      ctx.stroke();
-    }
-    ctx.globalAlpha=1;
-
-    // particles
-    if(!REDUCE){
-      for(const pt of parts){
-        pt.p+=pt.sp; if(pt.p>1) pt.p-=1;
-        const act=linkActive(pt.l);
-        const x=pt.l.A.px+(pt.l.B.px-pt.l.A.px)*pt.p;
-        const y=pt.l.A.py+(pt.l.B.py-pt.l.A.py)*pt.p;
-        ctx.beginPath();
-        ctx.arc(x,y, act?2.4:1.4, 0, 7);
-        ctx.fillStyle=linkColor(pt.l);
-        ctx.globalAlpha= act?0.95:0.12;
-        ctx.fill();
-      }
-      ctx.globalAlpha=1;
-    }
-
-    // nodes
-    for(const n of N){
-      const r=rad[n.t], hov=(n===hover);
-      // glow
-      const g=ctx.createRadialGradient(n.px,n.py,0,n.px,n.py,r*3.2);
-      g.addColorStop(0, col[n.t]+"55"); g.addColorStop(1, col[n.t]+"00");
-      ctx.beginPath(); ctx.arc(n.px,n.py,r*3.2,0,7); ctx.fillStyle=g; ctx.fill();
-      // core
-      ctx.beginPath(); ctx.arc(n.px,n.py,r,0,7);
-      ctx.fillStyle=col[n.t]; ctx.fill();
-      if(n.t==="you"){ ctx.lineWidth=2; ctx.strokeStyle="#0B1026"; ctx.stroke(); }
-      if(hov){
-        ctx.beginPath(); ctx.arc(n.px,n.py,r+6,0,7);
-        ctx.strokeStyle=col[n.t]; ctx.globalAlpha=.6; ctx.lineWidth=1.5; ctx.stroke(); ctx.globalAlpha=1;
-        // label
-        ctx.font='600 13px "Bricolage Grotesque", sans-serif';
-        const tw=ctx.measureText(n.label).width;
-        ctx.fillStyle="rgba(7,10,28,0.85)";
-        roundRect(n.px+r+8, n.py-13, tw+18, 26, 8); ctx.fill();
-        ctx.fillStyle="#E7ECFF"; ctx.fillText(n.label, n.px+r+17, n.py+4);
-      }
-    }
-  }
-  function roundRect(x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
-
-  let running=true;
-  function loop(){ if(running){ step(); draw(); } requestAnimationFrame(loop); }
-  document.addEventListener("visibilitychange",()=>running=!document.hidden);
-
-  // interaction
-  function pos(e){const r=canvas.getBoundingClientRect();const p=e.touches?e.touches[0]:e;return{x:p.clientX-r.left,y:p.clientY-r.top};}
-  function pick(x,y){let best=null,bd=1e9;for(const n of N){const d=(n.px-x)**2+(n.py-y)**2;const rr=(rad[n.t]+10)**2;if(d<rr&&d<bd){bd=d;best=n;}}return best;}
-  function down(e){const{x,y}=pos(e);drag=pick(x,y);if(drag){hover=drag;e.preventDefault();}}
-  function move(e){const{x,y}=pos(e);
-    if(drag){drag.px=x;drag.py=y;drag.x=x/W;drag.y=y/H;drag.vx=0;drag.vy=0;e.preventDefault();}
-    else{const h=pick(x,y);hover=h;canvas.style.cursor=h?"grab":"default";}
-  }
-  function up(){drag=null;}
-  canvas.addEventListener("mousedown",down); window.addEventListener("mousemove",move); window.addEventListener("mouseup",up);
-  canvas.addEventListener("touchstart",down,{passive:false}); canvas.addEventListener("touchmove",move,{passive:false}); window.addEventListener("touchend",up);
-
-  // mode buttons
-  const capEl=document.getElementById("modeCap");
-  const CAPS={
-    all:'Everything at once — <b>you</b>, agents, tools, and peer agents.',
-    mcp:'<b>MCP</b> — how agents reach your tools &amp; data.',
-    a2a:'<b>A2A</b> — how agents hand work to each other.'
-  };
-  function setCap(){ if(capEl){ capEl.className="mode-cap r4 "+mode; capEl.innerHTML=CAPS[mode]; } }
-  document.querySelectorAll(".modes button").forEach(b=>{
-    b.addEventListener("click",()=>{
-      mode=b.dataset.mode;
-      document.querySelectorAll(".modes button").forEach(x=>x.setAttribute("aria-pressed", x===b));
-      setCap();
-    });
-  });
-  setCap();
-
-  // everything is wired up now — re-fit for real layout, then start animating
-  window.addEventListener("load",()=>{ resize(); N.forEach(n=>{n.px=n.x*W;n.py=n.y*H;}); });
-  loop();
-})();
-
-/* ============================================================
-   2.  ERAS — Ask / Assist / Act
-   ============================================================ */
-(function(){
-  const eras=[
-    {q:"“What should I do?”", who:"You ask →",
-     d:"The first era. You bring the question, the AI brings information, and every next step is still yours to take.",
-     viz:"ask"},
-    {q:"“Help me do it.”", who:"You + a copilot →",
-     d:"Copilots arrive. The AI works beside you inside the task — suggesting, drafting, autocompleting — but you stay at the controls.",
-     viz:"assist"},
-    {q:"“Do it for me.”", who:"You delegate →",
-     d:"Agentic AI. You hand over a goal, and the system plans, uses tools, coordinates with other agents, and returns with the work done.",
-     viz:"act"},
-  ];
-  const q=document.getElementById("eraQuote"), d=document.getElementById("eraDesc"), v=document.getElementById("eraViz");
-  const segs=[...document.querySelectorAll(".seg")];
-
-  function vizSVG(kind){
-    const you=`<circle cx="90" cy="150" r="17" fill="${C.human}"/>`;
-    if(kind==="ask") return `<svg viewBox="0 0 300 300">
-      ${you}<text x="90" y="185" fill="${C.muted}" font-size="12" text-anchor="middle" font-family="Inter">you</text>
-      <circle cx="210" cy="150" r="20" fill="none" stroke="${C.agent}" stroke-width="2"/>
-      <text x="210" y="185" fill="${C.muted}" font-size="12" text-anchor="middle" font-family="Inter">AI</text>
-      <path d="M112 150 H186" stroke="${C.faint}" stroke-width="2" stroke-dasharray="4 5"/>
-      <path d="M186 150 l-10 -5 v10 z" fill="${C.faint}"/></svg>`;
-    if(kind==="assist") return `<svg viewBox="0 0 300 300">
-      <circle cx="120" cy="150" r="17" fill="${C.human}"/>
-      <circle cx="180" cy="150" r="17" fill="${C.agent}"/>
-      <text x="150" y="200" fill="${C.muted}" font-size="12" text-anchor="middle" font-family="Inter">side by side</text>
-      <path d="M137 150 H163" stroke="${C.agent}" stroke-width="2.5"/>
-      <circle cx="150" cy="100" r="30" fill="none" stroke="${C.faint}" stroke-width="1.5" stroke-dasharray="3 5"/>
-      <text x="150" y="104" fill="${C.faint}" font-size="11" text-anchor="middle" font-family="Inter">the task</text></svg>`;
-    return `<svg viewBox="0 0 300 300">
-      <circle cx="70" cy="150" r="17" fill="${C.human}"/>
-      <text x="70" y="185" fill="${C.muted}" font-size="12" text-anchor="middle" font-family="Inter">you</text>
-      <path d="M92 150 H140" stroke="${C.agent}" stroke-width="2"/><path d="M140 150 l-10 -5 v10 z" fill="${C.agent}"/>
-      <circle cx="165" cy="150" r="16" fill="${C.agent}"/>
-      <circle cx="230" cy="95" r="9" fill="${C.tool}"/><circle cx="245" cy="150" r="9" fill="${C.peer}"/><circle cx="230" cy="205" r="9" fill="${C.tool}"/>
-      <g stroke-width="1.6" fill="none">
-        <path d="M180 143 L221 100" stroke="${C.tool}"/>
-        <path d="M181 150 H236" stroke="${C.peer}"/>
-        <path d="M180 157 L221 200" stroke="${C.tool}"/></g>
-      <text x="150" y="255" fill="${C.muted}" font-size="12" text-anchor="middle" font-family="Inter">it runs on its own</text></svg>`;
-  }
-  function show(i){
-    const e=eras[i];
-    q.className="era-quote fade-swap"; d.className="era-desc fade-swap"; v.className="era-viz fade-swap";
-    q.innerHTML=`<span class="who">${e.who}</span>${e.q}`;
-    d.textContent=e.d; v.innerHTML=vizSVG(e.viz);
-    segs.forEach((s,k)=>s.setAttribute("aria-selected", k===i));
-    // retrigger animation
-    void q.offsetWidth;
-  }
-  segs.forEach((s,i)=>{
-    s.addEventListener("click",()=>show(i));
-    s.addEventListener("keydown",(ev)=>{
-      if(ev.key==="ArrowRight"||ev.key==="ArrowLeft"){
-        const n=(i+(ev.key==="ArrowRight"?1:2))%3; segs[n].focus(); show(n);
-      }
-    });
-  });
-  show(0);
-})();
-
-/* ============================================================
-   3.  LOOP — the 8 capabilities as a ring
-   ============================================================ */
-(function(){
-  const caps=[
-    {t:"Understand a goal", d:"It reads what you actually want, not just the literal words — the intent behind the request."},
-    {t:"Create a plan", d:"It breaks the goal into ordered steps before touching anything."},
-    {t:"Research information", d:"It gathers what it needs — searching, reading, pulling in context it didn't start with."},
-    {t:"Use tools & APIs", d:"It reaches out through connections like MCP to calendars, databases, code, and services."},
-    {t:"Delegate to other agents", d:"When a job needs a specialist, it hands part of the work to another agent via A2A."},
-    {t:"Maintain context & state", d:"It remembers what it's done and what's left, so long tasks stay coherent."},
-    {t:"Execute multi-step tasks", d:"It carries the plan out action by action, not one reply and done."},
-    {t:"Evaluate & try again", d:"It checks its own results, and loops back to fix what didn't work."},
-  ];
-  const svg=document.getElementById("loopSvg");
-  const detail=document.getElementById("capDetail");
-  const cx=200,cy=200,R=150;
-  let ns="http://www.w3.org/2000/svg";
-  let ring=document.createElementNS(ns,"circle");
-  ring.setAttribute("cx",cx);ring.setAttribute("cy",cy);ring.setAttribute("r",R);
-  ring.setAttribute("fill","none");ring.setAttribute("stroke","rgba(120,135,205,0.18)");ring.setAttribute("stroke-width","1.5");
-  svg.appendChild(ring);
-  // travelling pulse
-  const pulse=document.createElementNS(ns,"circle");
-  pulse.setAttribute("r","4.5");pulse.setAttribute("fill",C.agent);
-  svg.appendChild(pulse);
-
-  const nodes=[];
-  caps.forEach((c,i)=>{
-    const ang=(-90 + i*(360/caps.length))*Math.PI/180;
-    const x=cx+R*Math.cos(ang), y=cy+R*Math.sin(ang);
-    const g=document.createElementNS(ns,"g");
-    g.setAttribute("class","cap-node"); g.setAttribute("tabindex","0");
-    g.setAttribute("role","button"); g.setAttribute("aria-label",c.t);
-    const circ=document.createElementNS(ns,"circle");
-    circ.setAttribute("cx",x);circ.setAttribute("cy",y);circ.setAttribute("r","15");
-    circ.setAttribute("fill","rgba(120,135,205,0.06)");circ.setAttribute("stroke","rgba(120,135,205,0.3)");circ.setAttribute("stroke-width","1.5");
-    const tx=document.createElementNS(ns,"text");
-    tx.setAttribute("x",x);tx.setAttribute("y",y+4);tx.setAttribute("text-anchor","middle");tx.textContent=i+1;
-    g.appendChild(circ);g.appendChild(tx);
-    g.addEventListener("mouseenter",()=>select(i));
-    g.addEventListener("focus",()=>select(i));
-    g.addEventListener("click",()=>select(i));
-    svg.appendChild(g); nodes.push({g,x,y});
-  });
-
-  function select(i){
-    nodes.forEach((n,k)=>n.g.classList.toggle("active",k===i));
-    detail.innerHTML=`<div class="n">Step ${i+1} of 8</div><h3>${caps[i].t}</h3><p>${caps[i].d}</p>`;
-  }
-  select(0);
-
-  // animate pulse around ring when visible
-  let ang=-Math.PI/2, active=false;
-  new IntersectionObserver((es)=>{es.forEach(e=>active=e.isIntersecting);},{threshold:.2}).observe(svg);
-  function tick(){
-    if(active && !REDUCE){ ang+=0.012;
-      pulse.setAttribute("cx", cx+R*Math.cos(ang));
-      pulse.setAttribute("cy", cy+R*Math.sin(ang));
-    }
-    requestAnimationFrame(tick);
-  }
-  pulse.setAttribute("cx",cx);pulse.setAttribute("cy",cy-R);
-  tick();
-})();
-
-/* ============================================================
-   4.  EQUATION — Capability + Context + Tools + Memory + Verification + Governance
-   ============================================================ */
-(function(){
-  const terms=[
-    {t:"Capability", d:"a capable model"},
-    {t:"Context", d:"knows your situation"},
-    {t:"Tools", d:"can reach the world"},
-    {t:"Memory", d:"holds state over time"},
-    {t:"Verification", d:"checks its own work"},
-    {t:"Governance", d:"stays within limits"},
-  ];
-  const eq=document.getElementById("eq"), verdict=document.getElementById("verdict");
-  const state=terms.map(()=>true);
-
-  terms.forEach((term,i)=>{
-    if(i>0){const plus=document.createElement("span");plus.className="plus";plus.textContent="+";plus.setAttribute("aria-hidden","true");eq.appendChild(plus);}
-    const b=document.createElement("button");
-    b.className="term"; b.dataset.on="true"; b.setAttribute("aria-pressed","true");
-    b.innerHTML=`<div class="tt" style="color:${i===0?C.agent:i===5?C.human:'var(--ink)'}">${term.t}</div><div class="td">${term.d}</div>`;
-    b.addEventListener("click",()=>{state[i]=!state[i];b.dataset.on=state[i];b.setAttribute("aria-pressed",state[i]);render();});
-    eq.appendChild(b);
-  });
-  function render(){
-    const off=state.map((s,i)=>s?null:terms[i].t).filter(Boolean);
-    if(off.length===0){verdict.className="verdict ok";verdict.textContent="= an agent you can actually trust to act.";}
-    else{
-      verdict.className="verdict bad";
-      const miss = off.length===1 ? off[0] : off.slice(0,-1).join(", ")+" and "+off.slice(-1);
-      verdict.textContent=`= capable, but not yet trustworthy — missing ${miss}.`;
-    }
-  }
-  render();
-})();
-
-/* ============================================================
-   5.  TRUST DIAL — authority vs control
-   ============================================================ */
-(function(){
-  const svg=document.getElementById("dialSvg");
-  const range=document.getElementById("dialRange");
-  const read=document.getElementById("dialRead");
-  const scene=document.getElementById("dialScene");
-  const ns="http://www.w3.org/2000/svg";
-  const cx=110,cy=130,R=88;
-  const a0=Math.PI, a1=0; // left(180°) to right(0°)
-
-  // track
-  const track=document.createElementNS(ns,"path");
-  track.setAttribute("d",arc(a0,a1));
-  track.setAttribute("fill","none");track.setAttribute("stroke","rgba(120,135,205,0.18)");track.setAttribute("stroke-width","10");track.setAttribute("stroke-linecap","round");
-  svg.appendChild(track);
-  const fill=document.createElementNS(ns,"path");
-  fill.setAttribute("fill","none");fill.setAttribute("stroke-width","10");fill.setAttribute("stroke-linecap","round");
-  svg.appendChild(fill);
-  const knob=document.createElementNS(ns,"circle");
-  knob.setAttribute("r","9");knob.setAttribute("fill","#0B1026");knob.setAttribute("stroke-width","3");
-  svg.appendChild(knob);
-  const lblL=document.createElementNS(ns,"text");
-  lblL.setAttribute("x","16");lblL.setAttribute("y","148");lblL.setAttribute("fill",C.muted);lblL.setAttribute("font-size","11");lblL.setAttribute("font-family","Inter");lblL.textContent="you decide";
-  const lblR=document.createElementNS(ns,"text");
-  lblR.setAttribute("x","204");lblR.setAttribute("y","148");lblR.setAttribute("text-anchor","end");lblR.setAttribute("fill",C.muted);lblR.setAttribute("font-size","11");lblR.setAttribute("font-family","Inter");lblR.textContent="agent decides";
-  svg.appendChild(lblL);svg.appendChild(lblR);
-
-  function arc(from,to){
-    const x0=cx+R*Math.cos(from), y0=cy-R*Math.sin(from);
-    const x1=cx+R*Math.cos(to),  y1=cy-R*Math.sin(to);
-    return `M ${x0} ${y0} A ${R} ${R} 0 0 1 ${x1} ${y1}`;
-  }
-  function lerpColor(v){ // amber -> teal
-    const a=[242,193,78], b=[94,234,212];
-    const r=Math.round(a[0]+(b[0]-a[0])*v),g=Math.round(a[1]+(b[1]-a[1])*v),bl=Math.round(a[2]+(b[2]-a[2])*v);
-    return `rgb(${r},${g},${bl})`;
-  }
-  const scenes=[
-    {min:0,  h:"Assistant mode", p:"The agent suggests and drafts, but every real action waits for your yes. Nothing happens without you.", tag:"Highest control · slowest"},
-    {min:25, h:"Approval mode", p:"It plans and prepares the whole task, then pauses at the important steps for a quick sign-off before acting.", tag:"Human in the loop"},
-    {min:55, h:"Guardrailed autonomy", p:"It acts on its own inside clear limits — budgets, scopes, allowed tools — and escalates only when it hits an edge.", tag:"Human on the loop"},
-    {min:82, h:"Full delegation", p:"It owns the outcome end to end. Fast and hands-off — which is exactly why memory, verification and governance have to be solid first.", tag:"Highest speed · most trust required"},
-  ];
-  function sceneFor(v){let s=scenes[0];for(const sc of scenes)if(v>=sc.min)s=sc;return s;}
-
-  function update(){
-    const v=+range.value/100;
-    const ang=a0+(a1-a0)*v;
-    fill.setAttribute("d",arc(a0,ang));
-    fill.setAttribute("stroke",lerpColor(v));
-    knob.setAttribute("cx",cx+R*Math.cos(ang));
-    knob.setAttribute("cy",cy-R*Math.sin(ang));
-    knob.setAttribute("stroke",lerpColor(v));
-    read.textContent=Math.round(v*100)+"% autonomy";
-    read.style.color=lerpColor(v);
-    const s=sceneFor(+range.value);
-    scene.innerHTML=`<h3>${s.h}</h3><p>${s.p}</p><span class="tag">${s.tag}</span>`;
-  }
-  range.addEventListener("input",update);
-  update();
-})();
 </script>
 </body>
 </html>
