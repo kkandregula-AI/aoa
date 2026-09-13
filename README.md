@@ -40,4 +40,3 @@ Edit a file, then bump the version in `sw.js` (`age-of-agents-v1` → `-v2`) and
 That tells installed devices to refresh their cached copy.
 
 Designed & Architected by Krishnamurthy Kandregula · Made by Claude
-"# aoa" 

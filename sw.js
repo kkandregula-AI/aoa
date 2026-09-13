@@ -1,17 +1,13 @@
-/* The Age of Agents — offline shell.
-   Bump CACHE when you change any file to push an update to installed clients. */
-const CACHE = "age-of-agents-v1";
+/* The Age of Agents — service worker.
+   Strategy: network-first for pages (so new deploys show immediately when online),
+   cache fallback for offline (so it still works after the first load).
+   Bump CACHE whenever you change files. */
+const CACHE = "age-of-agents-v4";
 const CORE = [
-  "./",
-  "./index.html",
-  "./agentic-ai.html",
-  "./digital-workers.html",
-  "./manifest.webmanifest",
-  "./favicon.svg",
-  "./icons/icon-192.png",
-  "./icons/icon-512.png",
-  "./icons/icon-maskable-512.png",
-  "./icons/apple-touch-icon.png"
+  "./", "./index.html", "./agentic-ai.html", "./digital-workers.html",
+  "./manifest.webmanifest", "./favicon.svg",
+  "./icons/icon-192.png", "./icons/icon-512.png",
+  "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"
 ];
 
 self.addEventListener("install", (e) => {
@@ -31,7 +27,17 @@ self.addEventListener("fetch", (e) => {
   if (req.method !== "GET") return;
   const url = new URL(req.url);
 
-  // Google Fonts: serve cached, refresh in background (works offline after first load).
+  // Pages/HTML: NETWORK-FIRST — always try the live version, fall back to cache offline.
+  if (req.mode === "navigate" || (url.origin === self.location.origin && req.destination === "document")) {
+    e.respondWith(
+      fetch(req)
+        .then((res) => { const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); return res; })
+        .catch(() => caches.match(req).then((r) => r || caches.match("./index.html")))
+    );
+    return;
+  }
+
+  // Google Fonts: cache, refresh in background (works offline after first load).
   if (/fonts\.(googleapis|gstatic)\.com$/.test(url.hostname)) {
     e.respondWith(caches.open(CACHE).then(async (cache) => {
       const cached = await cache.match(req);
@@ -41,14 +47,12 @@ self.addEventListener("fetch", (e) => {
     return;
   }
 
-  // Same-origin: cache-first, fall back to network, then to the cover for navigations.
+  // Other same-origin assets (icons, manifest): cache-first, then network.
   if (url.origin === self.location.origin) {
     e.respondWith(
       caches.match(req).then((cached) => cached || fetch(req).then((res) => {
-        const copy = res.clone();
-        caches.open(CACHE).then((c) => c.put(req, copy));
-        return res;
-      }).catch(() => (req.mode === "navigate" ? caches.match("./index.html") : Response.error())))
+        const copy = res.clone(); caches.open(CACHE).then((c) => c.put(req, copy)); return res;
+      }).catch(() => Response.error()))
     );
   }
 });

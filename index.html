@@ -326,6 +326,8 @@
 /* PWA — real manifest (linked in <head>) + service worker for offline-after-first-load + install */
 (function(){
   if("serviceWorker" in navigator){
+    var refreshing=false;
+    navigator.serviceWorker.addEventListener("controllerchange",function(){ if(refreshing) return; refreshing=true; location.reload(); });
     window.addEventListener("load",function(){ navigator.serviceWorker.register("./sw.js").catch(function(){}); });
   }
   var d=null; var btn=document.getElementById("install");
