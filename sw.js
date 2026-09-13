@@ -2,7 +2,7 @@
    Strategy: network-first for pages (so new deploys show immediately when online),
    cache fallback for offline (so it still works after the first load).
    Bump CACHE whenever you change files. */
-const CACHE = "age-of-agents-v4";
+const CACHE = "age-of-agents-v5";
 const CORE = [
   "./", "./index.html", "./agentic-ai.html", "./digital-workers.html",
   "./manifest.webmanifest", "./favicon.svg",

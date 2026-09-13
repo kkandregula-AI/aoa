@@ -192,6 +192,14 @@
   .mode-cap{margin:12px 0 0;color:var(--muted);font-size:0.88rem;min-height:1.3em;transition:color .3s}
   .mode-cap b{font-weight:600}
   .mode-cap.mcp b{color:var(--tool)} .mode-cap.a2a b{color:var(--peer)} .mode-cap.all b{color:var(--agent)}
+  .backhome{position:fixed;top:calc(env(safe-area-inset-top,0px) + 14px);left:14px;z-index:80;
+    display:inline-flex;align-items:center;gap:7px;padding:8px 15px 8px 11px;border-radius:999px;
+    background:rgba(11,16,38,0.72);border:1px solid rgba(120,135,205,0.28);-webkit-backdrop-filter:blur(8px);backdrop-filter:blur(8px);
+    color:#E7ECFF;font-family:var(--display);font-weight:600;font-size:0.82rem;text-decoration:none;
+    box-shadow:0 10px 30px -14px rgba(0,0,0,0.6)}
+  .backhome:hover{border-color:var(--agent)}
+  .backhome:focus-visible{outline:2px solid var(--agent);outline-offset:3px}
+  .backhome svg{width:15px;height:15px;stroke:var(--agent)}
 
   @media (max-width:820px){
     .era-stage,.loop-grid,.trust-grid{grid-template-columns:1fr}
@@ -214,6 +222,11 @@
 </style>
 </head>
 <body>
+
+<a class="backhome" href="./index.html" aria-label="Back to the cover page">
+  <svg viewBox="0 0 24 24" fill="none" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 5l-7 7 7 7"/></svg>
+  Age of Agents
+</a>
 
 <!-- ============ HERO ============ -->
 <section class="hero" id="top">
