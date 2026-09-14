@@ -11,6 +11,7 @@ Installable, and works offline after the first load via `sw.js`.
 index.html
 agentic-ai.html
 digital-workers.html
+keeping-control.html
 sw.js
 manifest.webmanifest
 favicon.svg

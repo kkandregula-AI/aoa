@@ -4,23 +4,20 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
 <title>The Age of Agents — two interactive pieces</title>
-<meta name="description" content="A two-part interactive set on agentic AI: the shift from AI that answers to AI that acts, and the wiring — MCP and A2A — that lets digital workers plug in and team up." />
-<<<<<<< HEAD
-=======
+<meta name="description" content="A three-part interactive set on agentic AI: the shift from AI that answers to AI that acts, and the wiring — MCP and A2A — that lets digital workers plug in and team up." />
 <meta property="og:type" content="website" />
 <meta property="og:site_name" content="The Age of Agents" />
 <meta property="og:url" content="https://aoa-two.vercel.app/" />
 <meta property="og:title" content="The Age of Agents" />
-<meta property="og:description" content="Two interactive pieces on agentic AI — the shift to AI that acts, and the wiring (MCP & A2A) behind digital workers." />
+<meta property="og:description" content="Three interactive pieces on agentic AI — the shift to AI that acts, the wiring (MCP & A2A) behind digital workers, and keeping control." />
 <meta property="og:image" content="https://aoa-two.vercel.app/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
 <meta property="og:image:alt" content="The Age of Agents — an interactive set on agentic AI" />
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="The Age of Agents" />
-<meta name="twitter:description" content="Two interactive pieces on agentic AI — the shift to AI that acts, and the wiring (MCP & A2A) behind digital workers." />
+<meta name="twitter:description" content="Three interactive pieces on agentic AI — the shift to AI that acts, the wiring (MCP & A2A) behind digital workers, and keeping control." />
 <meta name="twitter:image" content="https://aoa-two.vercel.app/og-image.png" />
->>>>>>> 3698aac (Age of Agents v3)
 
 <meta name="theme-color" content="#16202B" />
 <meta name="apple-mobile-web-app-capable" content="yes" />
@@ -63,7 +60,7 @@
   .mast p{color:#9AA9BC;max-width:52ch;margin:16px auto 0;font-size:clamp(1rem,1.5vw,1.14rem)}
 
   /* diptych */
-  .doors{flex:1;display:grid;grid-template-columns:1fr 1fr}
+  .doors{flex:1;display:grid;grid-template-columns:repeat(3,1fr)}
   .door{position:relative;overflow:hidden;display:flex;flex-direction:column;justify-content:space-between;
     padding:clamp(30px,4.5vw,56px);min-height:clamp(340px,52vh,560px);transition:transform .35s ease}
   .door:focus-visible{outline:3px solid var(--agent);outline-offset:-6px}
@@ -102,10 +99,22 @@
   .d2 .tag.m{background:rgba(14,154,167,0.12);color:var(--mcp)}
   .d2 .tag.a{background:rgba(217,130,15,0.14);color:var(--a2a)}
 
+  /* Door III — slate, "control room" */
+  .d3{background:
+      radial-gradient(500px 320px at 85% 12%, rgba(52,211,153,0.10), transparent 60%),
+      linear-gradient(180deg,#0E1317,#141C21);color:#E6EDF0}
+  .d3 .part{color:#34D399}
+  .d3 h2{font-family:var(--bric);font-weight:700;letter-spacing:-0.02em;font-size:clamp(1.9rem,3.6vw,2.9rem)}
+  .d3 h2 .g{color:#34D399}
+  .d3 .blurb{color:#93A3AB}
+  .d3 .foot{color:#34D399} .d3 .foot .line{background:#34D399}
+  .d3 .tag.g{background:rgba(52,211,153,0.12);color:#34D399}
+  .d3 .tag.am{background:rgba(240,168,48,0.14);color:#F0A830}
+
   /* footer */
   .foota{background:var(--ink);text-align:center;padding:clamp(24px,4vh,40px) 24px;color:#6B7C90;font-size:0.85rem;line-height:1.9}
   .foota strong{color:#9AA9BC;font-weight:600}
-  .seam{height:1px;background:linear-gradient(90deg,var(--indigo),var(--paper))}
+  .seam{height:1px;background:linear-gradient(90deg,var(--indigo),var(--paper),#0E1317)}
 
   /* motif animations */
   .pulse{animation:pl 2.6s ease-in-out infinite}
@@ -117,7 +126,7 @@
   @media (max-width:760px){
     .doors{grid-template-columns:1fr}
     .door .motif{opacity:.5;right:-30px}
-    .seam{background:linear-gradient(180deg,var(--indigo),var(--paper))}
+    .seam{background:linear-gradient(180deg,var(--indigo),var(--paper),#0E1317)}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none!important;transition:none!important}
@@ -130,7 +139,7 @@
   <header class="mast">
     <span class="brandmark"><i></i>An interactive set</span>
     <h1><span class="b">The age of</span> <span class="a">agents</span></h1>
-    <p>Two pieces on how AI stops answering and starts doing — the shift itself, and the wiring underneath it. Pick a door.</p>
+    <p>Three pieces on how AI stops answering and starts doing — the shift, the wiring, and staying in control. Pick a door.</p>
   </header>
 
   <main class="doors">
@@ -171,13 +180,29 @@
       </div>
       <div class="foot"><span class="line"></span>Enter Part II</div>
     </a>
+    <a class="door d3" href="./keeping-control.html" aria-label="Open Part Three: Keeping Control">
+      <svg class="motif" width="240" height="240" viewBox="0 0 240 240" aria-hidden="true">
+        <path d="M120 58 L172 82 V122 C172 162 149 186 120 200 C91 186 68 162 68 122 V82 Z" fill="none" stroke="#34D399" stroke-width="2.5" opacity="0.7"/>
+        <path d="M100 124 l14 15 l28 -33" fill="none" stroke="#34D399" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <circle class="pulse" cx="66" cy="70" r="5" fill="#34D399"/>
+        <circle class="pulse b" cx="176" cy="150" r="5" fill="#F0A830"/>
+      </svg>
+      <div>
+        <div class="part">Part III</div>
+        <h2>Keeping <span class="g">control</span></h2>
+        <p class="blurb">What goes wrong when agents act alone — and the safeguards that catch it. Slide the autonomy dial, run the failures, build the trust.</p>
+        <div class="tags"><span class="tag g">governance</span><span class="tag am">safeguards</span></div>
+      </div>
+      <div class="foot"><span class="line"></span>Enter Part III</div>
+    </a>
+
   </main>
 
   <div class="seam" aria-hidden="true"></div>
 
   <footer class="foota">
     <strong>Designed &amp; Architected by Krishnamurthy Kandregula · Made by Claude</strong><br>
-    A two-part interactive set on agentic AI
+    A three-part interactive set on agentic AI
   </footer>
 
 <button id="install" aria-label="Install this app" style="position:fixed;right:16px;bottom:16px;z-index:60;display:none;align-items:center;gap:8px;background:#5EEAD4;color:#0B1026;border:none;font-family:'IBM Plex Sans',system-ui,sans-serif;font-weight:600;font-size:.9rem;padding:11px 16px;border-radius:12px;cursor:pointer;box-shadow:0 14px 40px -12px rgba(0,0,0,.5)"><svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="#0B1026" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12m0 0 4-4m-4 4-4-4"/><path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2"/></svg>Install</button>
